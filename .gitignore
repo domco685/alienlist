@@ -1,0 +1,23 @@
+# Local PDF mirror — 2.4 GB, exceeds GitHub limits. Regenerate with `python3 download.py`.
+assets/pdf/
+
+# Build/probe artifacts (regenerable from uap-csv.csv)
+catalog.raw.json
+sizes.json
+sizes.files.txt
+sizes.thumbs.txt
+urls.txt
+thumbs.txt
+probe.sh
+download.log
+download.stdout.log
+*.log
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Memory / private workspace
+memory/

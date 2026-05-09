@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UAP Map &mdash; PURSUE Release 01</title>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMWGLV4CE9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RMWGLV4CE9');
+</script>
+
+<!-- MapLibre GL JS (self-hosted): Google-Earth-style globe when WebGL2 available, else flat satellite map -->
+<link rel="stylesheet" href="assets/lib/maplibre-gl.css" />
+<script src="assets/lib/maplibre-gl.js"></script>
+
+<style>
+  :root {
+    --bg:#000;
+    --panel: rgba(11,14,20,0.92);
+    --panel2: #161b25;
+    --line: #232a39;
+    --text: #e6ecf3;
+    --muted: #8a93a3;
+    --accent: #ff8a3d;
+    --accent2: #4ec9ff;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; background:#000; color:var(--text); font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow:hidden; }
+  #map { position: absolute; top:0; left:0; right:0; bottom:0; }
+
+  /* Pin style — MapLibre's marker layer applies position:absolute and the
+     transform: translate(-50%, -100%) itself for anchor:bottom; don't fight it. */
+  .pin {
+    cursor: pointer;
+    width: 18px;
+    height: 30px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.7));
+  }
+  .pin-dot {
+    position: absolute;
+    left: 2px; top: 0;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(255,138,61,.18), 0 0 12px rgba(255,138,61,.55);
+    transition: transform .15s;
+  }
+  .pin:hover .pin-dot { transform: scale(1.25); }
+  .pin-stem {
+    position: absolute;
+    left: 50%; top: 14px;
+    width: 2px; height: 16px;
+    background: linear-gradient(180deg, var(--accent), transparent);
+    transform: translateX(-50%);
+  }
+  .pin.special-orbit .pin-dot { background: #4ec9ff; box-shadow: 0 0 0 3px rgba(78,201,255,.2), 0 0 12px rgba(78,201,255,.55); }
+  .pin.special-moon  .pin-dot { background: #d8d4c2; border-color: #fff8e6; box-shadow: 0 0 0 3px rgba(216,212,194,.18), 0 0 12px rgba(216,212,194,.6); }
+  .pin.pin-small { width: 14px; height: 24px; }
+  .pin.pin-small .pin-dot { width: 10px; height: 10px; border-width: 1.5px; left: 2px; }
+  .pin.pin-small .pin-stem { top: 10px; height: 14px; }
+
+  /* Force markers to stay visible at all times.
+     Globe projection automatically sets opacity:0 on backside markers
+     and very low zooms cull them. Override that — pins are the whole point. */
+  .maplibregl-marker {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  /* Header */
+  header {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+    padding: 16px 22px;
+    background: linear-gradient(180deg, rgba(11,14,20,0.92) 0%, rgba(11,14,20,0) 100%);
+    pointer-events: none;
+  }
+  header h1 { font-size: 16px; margin:0 0 4px; letter-spacing: .04em; }
+  header .sub { color: var(--muted); font-size: 12px; }
+  header a { color: var(--accent2); text-decoration: none; pointer-events: auto; }
+  header .nav { margin-top: 8px; display: flex; gap: 16px; pointer-events: auto; }
+  header .nav a { padding: 4px 10px; border:1px solid var(--line); border-radius: 4px; background: rgba(11,14,20,0.7); }
+
+  /* Side panel for selected pin */
+  #panel {
+    position: absolute; top: 88px; left: 18px;
+    width: 380px; max-height: calc(100% - 110px);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    z-index: 9;
+    transform: translateX(-450px); transition: transform .25s;
+  }
+  #panel.open { transform: translateX(0); }
+  #panel header {
+    position: static; padding: 14px 16px; border-bottom: 1px solid var(--line);
+    background: var(--panel2); pointer-events: auto;
+  }
+  #panel header .loc { font-size: 15px; font-weight: 600; color: var(--accent); }
+  #panel header .meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  #panel header .close {
+    position: absolute; top: 12px; right: 12px;
+    background:none; border:none; color: var(--muted); font-size: 18px; cursor: pointer;
+  }
+  #panel .body { overflow-y: auto; padding: 0; flex: 1; }
+  .incident {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .incident:hover { background: rgba(78,201,255,0.04); }
+  .incident .row1 {
+    display: flex; align-items: baseline; gap: 8px;
+    color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .incident .date { color: var(--accent2); font-weight: 600; }
+  .incident .pill { padding: 1px 6px; border:1px solid var(--line); border-radius: 999px; font-size: 10px; }
+  .incident .pill.PDF { color:#ffaa66; }
+  .incident .pill.VID { color:#ff7d99; }
+  .incident .pill.IMG { color:#93e0a4; }
+  .incident .title { font-size: 13px; margin: 4px 0 4px; color: var(--text); font-weight: 500; }
+  .incident .desc {
+    color: #c0c8d4; font-size: 12px; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .incident.expanded .desc { -webkit-line-clamp: unset; }
+  .incident .more { color: var(--accent2); font-size: 11px; cursor: pointer; margin-top: 4px; display: inline-block; }
+  .incident .links { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .incident .links a {
+    color: var(--accent2); border:1px solid var(--line); border-radius: 4px;
+    padding: 2px 8px; text-decoration: none; font-size: 11px;
+  }
+  .incident .links a:hover { border-color: var(--accent); color: var(--accent); }
+  .incident .thumb {
+    width: 100%; max-width: 320px; height: auto; max-height: 160px; object-fit: cover;
+    border-radius: 4px; margin-top: 6px; background: #222;
+  }
+
+  /* Legend */
+  #legend {
+    position: absolute; bottom: 24px; left: 18px;
+    background: var(--panel); border:1px solid var(--line); border-radius:6px;
+    padding: 10px 14px; font-size: 12px; color: var(--muted);
+    backdrop-filter: blur(6px); z-index: 9;
+  }
+  #legend .key { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  #legend .swatch { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; }
+  #legend .s-earth { background: var(--accent); }
+  #legend .s-orbit { background: var(--accent2); }
+  #legend .s-moon  { background: #d8d4c2; }
+
+  /* Quick filter */
+  #search {
+    position: absolute; top: 92px; right: 18px; z-index: 9;
+    background: var(--panel); border:1px solid var(--line); border-radius:6px;
+    padding: 8px 10px; color: var(--text); width: 240px;
+    backdrop-filter: blur(6px);
+    font: inherit;
+  }
+
+  .maplibregl-ctrl-group { background: var(--panel) !important; }
+  .maplibregl-ctrl-group button { background: transparent !important; }
+  .maplibregl-ctrl-group button span { filter: invert(1); }
+  .maplibregl-ctrl-attrib { background: rgba(0,0,0,0.5) !important; color: var(--muted) !important; }
+  .maplibregl-ctrl-attrib a { color: var(--muted) !important; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<header>
+  <h1>UAP MAP &mdash; PURSUE Release 01</h1>
+  <div class="sub">36 incident locations across 161 catalog records &middot; click any pin for details</div>
+  <div class="nav">
+    <a href="index.html">Catalog</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source ↗</a>
+  </div>
+</header>
+
+<input id="search" placeholder="Search title, agency, year…" />
+
+<aside id="panel">
+  <header>
+    <button class="close" title="Close">×</button>
+    <div class="loc" id="panel-loc">—</div>
+    <div class="meta" id="panel-meta">—</div>
+  </header>
+  <div class="body" id="panel-body"></div>
+</aside>
+
+<div id="legend">
+  <div class="key"><span class="swatch s-earth"></span> Terrestrial / maritime</div>
+  <div class="key"><span class="swatch s-orbit"></span> Low Earth Orbit</div>
+  <div class="key"><span class="swatch s-moon"></span> Lunar</div>
+  <div style="margin-top:6px;font-size:11px;color:#666">Number badge = # records at that location</div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(async function(){
+await window.UAP_READY;
+const records = window.UAP_CATALOG;
+const geo = window.UAP_GEOCODE;
+
+// Group records by location (with valid geocode)
+const byLoc = {};
+for (const r of records) {
+  const key = r.incidentLocation || '';
+  if (!key || key === 'N/A' || !geo[key]) continue;
+  (byLoc[key] = byLoc[key] || []).push(r);
+}
+
+// Deterministic per-record jitter inside each location's uncertainty radius.
+// Precise locations (uncertaintyKm < 30) get no jitter — pins stack at the centroid.
+// Regional locations get spread out so each record gets its own clickable pin.
+function hashStr(s){ let h=0; for(let i=0;i<s.length;i++) h=((h<<5)-h+s.charCodeAt(i))|0; return h; }
+function jitterFor(loc, recordId, indexInLoc) {
+  const g = geo[loc];
+  if (!g) return null;
+  if (g.uncertaintyKm < 30) return [g.lng, g.lat];
+  const seed = Math.abs(hashStr(loc + ':' + recordId + ':' + indexInLoc));
+  const angle = ((seed % 10000) / 10000) * 2 * Math.PI;
+  const distFraction = Math.sqrt(((seed >> 14) % 10000) / 10000);
+  const radiusKm = Math.min(g.uncertaintyKm * 0.75, 800) * distFraction;
+  const dLat = (radiusKm / 111) * Math.sin(angle);
+  const dLng = (radiusKm / (111 * Math.cos(g.lat * Math.PI/180))) * Math.cos(angle);
+  return [g.lng + dLng, g.lat + dLat];
+}
+
+// Sort each group by date (most recent first)
+function parseDate(s){
+  if (!s || s==='N/A') return 0;
+  // mm/dd/yy or mm/dd/yyyy
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (m) {
+    let y = parseInt(m[3]); if (y < 100) y = y >= 30 ? 1900+y : 2000+y;
+    return new Date(y, parseInt(m[1])-1, parseInt(m[2])).getTime();
+  }
+  const m4 = s.match(/\b(19|20)\d{2}\b/);
+  if (m4) return new Date(parseInt(m4[0]),0,1).getTime();
+  return 0;
+}
+function fmtDate(s){
+  if (!s || s==='N/A') return 'date unknown';
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (m) {
+    let y = parseInt(m[3]); if (y < 100) y = y >= 30 ? 1900+y : 2000+y;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[parseInt(m[1])-1]} ${parseInt(m[2])}, ${y}`;
+  }
+  return s;
+}
+for (const k in byLoc) byLoc[k].sort((a,b)=>parseDate(b.incidentDate)-parseDate(a.incidentDate));
+
+// Init map: dark satellite-like base via ESRI World Imagery (free, no key)
+const map = new maplibregl.Map({
+  container: 'map',
+  style: {
+    version: 8,
+    sources: {
+      'world-imagery': {
+        type: 'raster',
+        tiles: [
+          'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+        ],
+        tileSize: 256,
+        attribution: 'Imagery © Esri, Maxar, Earthstar Geographics; CNES/Airbus DS, USGS, USDA, AeroGRID, IGN'
+      },
+      'world-labels': {
+        type: 'raster',
+        tiles: [
+          'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+        ],
+        tileSize: 256
+      }
+    },
+    layers: [
+      { id: 'imagery', type: 'raster', source: 'world-imagery' },
+      { id: 'labels',  type: 'raster', source: 'world-labels',  paint: { 'raster-opacity': 0.7 } }
+    ]
+  },
+  center: [25, 30],
+  zoom: 1.8,
+  minZoom: 1.5,
+  maxPitch: 80,
+  hash: false
+});
+
+// Mercator (flat) projection — guarantees every pin is visible at its true lat/lng.
+// (Globe projection looks more like Google Earth but causes pins to project through
+// the planet at low zoom, which puts them at visually wrong positions.)
+map.on('style.load', ()=>{
+  try { map.setProjection({ type: 'mercator' }); } catch(e) {}
+});
+
+map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+
+// Place markers — one per record, jittered within its location's uncertainty radius
+window.__map = map;
+const markers = [];
+window.__markers = markers;
+function makeMarker(loc, record, idx, totalAtLoc) {
+  const coord = jitterFor(loc, record.id, idx);
+  const g = geo[loc];
+  const el = document.createElement('div');
+  el.className = 'pin';
+  if (loc === 'Low Earth Orbit') el.classList.add('special-orbit');
+  if (loc === 'Moon') el.classList.add('special-moon');
+  // Smaller pin when the location has many records (visually less noisy when zoomed out)
+  if (totalAtLoc >= 8) el.classList.add('pin-small');
+  el.innerHTML = `<div class="pin-stem"></div><div class="pin-dot"></div>`;
+  const m = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+    .setLngLat(coord)
+    .addTo(map);
+  el.addEventListener('click', (ev)=>{
+    ev.stopPropagation();
+    openSingle(record, loc);
+    map.flyTo({ center: coord, zoom: Math.max(map.getZoom(), 5), speed: 0.8 });
+  });
+  return { el, marker: m, loc, record, coord };
+}
+for (const loc in byLoc) {
+  const items = byLoc[loc];
+  items.forEach((r, i) => markers.push(makeMarker(loc, r, i, items.length)));
+}
+
+// Side panel logic
+const panel = document.getElementById('panel');
+const panelLoc = document.getElementById('panel-loc');
+const panelMeta = document.getElementById('panel-meta');
+const panelBody = document.getElementById('panel-body');
+panel.querySelector('.close').addEventListener('click', ()=>panel.classList.remove('open'));
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderIncident(r, opts={}) {
+  const desc = (r.description||'').replace(/\s+/g,' ').trim();
+  return `
+    <div class="incident${opts.expanded?' expanded':''}">
+      <div class="row1">
+        <span class="date">${escapeHtml(fmtDate(r.incidentDate))}</span>
+        <span>·</span>
+        <span>${escapeHtml(r.agency||'')}</span>
+        <span class="pill ${r.type}">${r.type}</span>
+      </div>
+      <div class="title">${escapeHtml(r.title)}</div>
+      ${r.localThumb ? `<img class="thumb" src="${r.localThumb}" alt="" loading="lazy">` : ''}
+      <div class="desc">${escapeHtml(desc)}</div>
+      ${desc.length > 280 && !opts.expanded ? '<span class="more">show more ▾</span>' : ''}
+      <div class="links">
+        ${r.localFile ? `<a href="${r.localFile}" target="_blank">Open PDF</a>` : ''}
+        ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank">DVIDS Video</a>` : ''}
+        ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank">Source</a>` : ''}
+      </div>
+    </div>`;
+}
+
+function wireIncidentToggles() {
+  panelBody.querySelectorAll('.more').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const inc = el.closest('.incident');
+      inc.classList.toggle('expanded');
+      el.textContent = inc.classList.contains('expanded') ? 'show less ▴' : 'show more ▾';
+    });
+  });
+}
+
+// Open the panel showing ONE record (the user clicked its individual pin).
+// If the location has more records, show a header link to view all of them.
+function openSingle(r, loc) {
+  const g = geo[loc];
+  const items = byLoc[loc] || [];
+  panelLoc.textContent = loc;
+  const meta = `${g.lat.toFixed(2)}°, ${g.lng.toFixed(2)}°${g.uncertaintyKm ? ` · ±${g.uncertaintyKm} km`: ''}`;
+  panelMeta.innerHTML = items.length > 1
+    ? `<a href="#" id="show-all-loc">← All ${items.length} records in ${escapeHtml(loc)}</a> &middot; ${meta}`
+    : `1 record &middot; ${meta}`;
+  panelBody.innerHTML = renderIncident(r, { expanded: true });
+  wireIncidentToggles();
+  const showAll = document.getElementById('show-all-loc');
+  if (showAll) showAll.addEventListener('click', ev => { ev.preventDefault(); openLocation(loc, items); });
+  panel.classList.add('open');
+}
+
+// Open the panel showing ALL records at a location (the "see all" view).
+function openLocation(loc, items) {
+  const g = geo[loc];
+  panelLoc.textContent = loc;
+  panelMeta.innerHTML = `${items.length} record${items.length>1?'s':''} &middot; ${g.lat.toFixed(2)}°, ${g.lng.toFixed(2)}°${g.uncertaintyKm ? ` &middot; ±${g.uncertaintyKm} km`: ''}`;
+  panelBody.innerHTML = items.map(r => renderIncident(r)).join('');
+  wireIncidentToggles();
+  panel.classList.add('open');
+}
+
+// Search
+const $search = document.getElementById('search');
+$search.addEventListener('input', () => {
+  const q = $search.value.trim().toLowerCase();
+  for (const m of markers) {
+    if (!q) { m.el.style.display = ''; continue; }
+    const r = m.record;
+    const hit = (r.title+' '+r.description+' '+r.agency+' '+r.incidentDate+' '+m.loc).toLowerCase().includes(q);
+    m.el.style.display = hit ? '' : 'none';
+  }
+});
+
+// Click-anywhere closes panel
+map.on('click', ()=>panel.classList.remove('open'));
+
+// Auto-open: the location with the most records — show the all-records view
+const topLoc = Object.entries(byLoc).sort((a,b) => b[1].length - a[1].length)[0];
+if (topLoc) {
+  setTimeout(() => openLocation(topLoc[0], topLoc[1]), 600);
+}
+})();
+</script>
+</body>
+</html>

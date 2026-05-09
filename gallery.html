@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UAP Gallery — PURSUE Release 01</title>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMWGLV4CE9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RMWGLV4CE9');
+</script>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #11151d;
+    --panel2: #161b25;
+    --line: #232a39;
+    --text: #e6ecf3;
+    --muted: #8a93a3;
+    --accent: #ff8a3d;
+    --accent2: #4ec9ff;
+    --warn: #ffd166;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header { padding: 28px 32px 18px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #131826 0%, #0b0e14 100%); }
+  header h1 { margin: 0 0 6px; font-size: 22px; letter-spacing:.04em; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  header .nav { margin-top: 12px; display:flex; gap: 18px; flex-wrap: wrap; }
+  header .nav a { padding: 6px 12px; border:1px solid var(--line); border-radius: 6px; }
+  header .nav a.active { border-color: var(--accent); color: var(--accent); }
+
+  main { max-width: 1400px; margin: 0 auto; padding: 24px 32px 60px; }
+
+  .lede {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 18px 22px; margin-bottom: 28px;
+  }
+  .lede h2 { margin: 0 0 10px; font-size: 16px; color: var(--accent); text-transform: uppercase; letter-spacing: .04em; }
+  .lede p { margin: 6px 0; color: #c9d1da; max-width: 80ch; }
+  .lede .callout {
+    border-left: 3px solid var(--warn); padding: 6px 12px; margin-top: 12px;
+    color: var(--warn); background: rgba(255,209,102,0.05);
+  }
+
+  section.group { margin-bottom: 36px; }
+  section.group > h2 {
+    font-size: 17px; color: var(--accent); letter-spacing: .04em; text-transform: uppercase;
+    margin: 0 0 6px; display: flex; align-items: baseline; gap: 12px;
+  }
+  section.group > h2 .count { font-size: 12px; color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  section.group > p.desc { margin: 0 0 16px; color: var(--muted); font-size: 13px; max-width: 80ch; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: zoom-in;
+    transition: border-color .15s, transform .15s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card .img-wrap {
+    aspect-ratio: 4/3;
+    background: #000;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card img {
+    width: 100%; height: 100%; object-fit: contain;
+    background: #000;
+  }
+  .card .meta {
+    padding: 10px 12px;
+    font-size: 12px;
+    border-top: 1px solid var(--line);
+    background: var(--panel2);
+  }
+  .card .title { color: var(--text); font-weight: 500; line-height: 1.3; margin-bottom: 4px; }
+  .card .sub { color: var(--muted); font-size: 11px; }
+  .badges { position: absolute; top: 8px; left: 8px; display: flex; gap: 4px; }
+  .badge {
+    background: rgba(0,0,0,0.7);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    backdrop-filter: blur(4px);
+  }
+  .badge.redacted { color: var(--warn); border-color: #5d4a16; }
+  .badge.highres { color: var(--accent2); border-color: #234050; }
+  .card.featured { grid-column: span 2; }
+  @media (max-width: 720px) { .card.featured { grid-column: span 1; } }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.95);
+    display: none;
+    z-index: 100;
+    padding: 40px;
+  }
+  .lightbox.open { display: flex; flex-direction: column; }
+  .lightbox img {
+    flex: 1; min-height: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;
+  }
+  .lightbox .lb-meta {
+    color: var(--text);
+    padding: 14px 8px 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-height: 35vh;
+    overflow-y: auto;
+  }
+  .lightbox .lb-meta .ttl { font-weight: 600; color: var(--accent); margin-bottom: 4px; font-size: 15px; }
+  .lightbox .lb-meta .sub { color: var(--muted); margin-bottom: 8px; font-size: 12px; }
+  .lightbox .lb-meta .desc { color: #c9d1da; max-width: 80ch; }
+  .lightbox .close {
+    position: absolute; top: 12px; right: 16px;
+    background: rgba(0,0,0,0.7); border: 1px solid var(--line);
+    color: var(--text); width: 36px; height: 36px;
+    border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1;
+  }
+  .lightbox .nav-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.5); border: 1px solid var(--line);
+    color: var(--text); width: 44px; height: 44px;
+    border-radius: 50%; cursor: pointer; font-size: 22px; line-height: 1;
+  }
+  .lightbox .nav-btn.prev { left: 12px; }
+  .lightbox .nav-btn.next { right: 12px; }
+  .lightbox .open-link {
+    display: inline-block; margin-top: 6px;
+    color: var(--accent2); padding: 3px 8px; border:1px solid var(--line); border-radius: 4px;
+    font-size: 12px;
+  }
+
+  footer { color: var(--muted); padding: 18px 32px 32px; font-size: 12px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>UAP GALLERY &mdash; PURSUE Release 01</h1>
+  <div class="sub">Visual evidence from the 8 May 2026 declassification &middot; FBI still images, NASA lunar photographs, and FBI Lab composite sketch</div>
+  <div class="nav">
+    <a href="index.html">Catalog</a>
+    <a href="map.html">3D Map</a>
+    <a class="active" href="gallery.html">Gallery</a>
+    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source: war.gov/UFO ↗</a>
+  </div>
+</header>
+
+<main>
+
+  <div class="lede">
+    <h2>What's actually here</h2>
+    <p>Release 01 contains <strong>39 visual artifacts</strong> across 4 categories: 1 FBI Lab composite sketch, 8 FBI still images submitted directly as imagery, 24 FBI still images wrapped in single-page PDFs, and 6 NASA Apollo archival photographs annotated to highlight unidentified phenomena.</p>
+    <div class="callout">
+      <strong>Heads up:</strong> No images of beings, entities, or "aliens" exist in this release. Every visual artifact depicts <em>objects/craft</em> &mdash; usually heavily redacted with black bars covering everything except the UAP region of interest. The most visually descriptive item is the FBI Lab composite sketch describing an "ellipsoid bronze metallic object."
+    </div>
+  </div>
+
+  <section class="group" id="g-fbi-a">
+    <h2>FBI Still Images — A-series <span class="count">8 items · direct PNG stills</span></h2>
+    <p class="desc">Stills derived from a U.S. military system, submitted by the FBI to AARO in late 2025. Date and location withheld; black-bar redactions cover most of each frame except the UAP itself.</p>
+    <div class="grid" id="grid-fbi-a"></div>
+  </section>
+
+  <section class="group" id="g-nasa">
+    <h2>NASA Apollo Lunar Photographs <span class="count">6 items · high-res JPG</span></h2>
+    <p class="desc">Apollo 12 (1969) and Apollo 17 (1972) archival photographs of the lunar surface with highlighted "areas of interest" identifying unidentified phenomena above the lunar horizon. These are the largest-resolution images in the release (4400 × 4600 px).</p>
+    <div class="grid" id="grid-nasa"></div>
+  </section>
+
+  <section class="group" id="g-fbi-b">
+    <h2>FBI Still Images — B-series <span class="count">24 items · PDF-wrapped stills</span></h2>
+    <p class="desc">Same FBI/AARO submission pipeline as the A-series, but each image is delivered inside a single-page PDF. Click to view the full PDF; thumbnails preview the page.</p>
+    <div class="grid" id="grid-fbi-b"></div>
+  </section>
+
+  <section class="group" id="g-other">
+    <h2>Other Visual Materials <span class="count" id="g-other-count">—</span></h2>
+    <p class="desc">Slide-deck thumbnails and report cover pages from the most visually descriptive PDF records (Western US Event Slides, Unresolved UAP Reports paired with declassified video).</p>
+    <div class="grid" id="grid-other"></div>
+  </section>
+
+  <section class="group" id="g-sketch">
+    <h2>Composite Sketch <span class="count">1 item · FBI Lab graphic</span></h2>
+    <p class="desc">A 30 April 2024 FBI Lab rendering depicting corroborating eyewitness reports from September 2023. Per the description: "an apparent ellipsoid bronze metallic object materializing out of a bright light in the sky, 130–195 feet in length, and disappearing instantaneously."</p>
+    <div class="grid" id="grid-sketch"></div>
+  </section>
+</main>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+  <button class="close" aria-label="Close" onclick="closeLB()">×</button>
+  <button class="nav-btn prev" aria-label="Previous" onclick="navLB(-1)">‹</button>
+  <button class="nav-btn next" aria-label="Next" onclick="navLB(1)">›</button>
+  <img id="lb-img" alt="" />
+  <div class="lb-meta">
+    <div class="ttl" id="lb-ttl"></div>
+    <div class="sub" id="lb-sub"></div>
+    <div class="desc" id="lb-desc"></div>
+    <a id="lb-source" class="open-link" target="_blank" rel="noopener">Open source ↗</a>
+  </div>
+</div>
+
+<footer>
+  Mirror of war.gov/UFO/ Release 01 (8 May 2026). Visual artifacts cached locally under <code>assets/pdf/</code> (originals) and <code>assets/thumb/</code> (thumbnails).
+</footer>
+
+<script src="data.js"></script>
+<script>
+(async function(){
+await window.UAP_READY;
+const records = window.UAP_CATALOG;
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function fmtDate(s){
+  if (!s || s==='N/A') return 'date withheld';
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (m) {
+    let y = parseInt(m[3]); if (y < 100) y = y >= 30 ? 1900+y : 2000+y;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[parseInt(m[1])-1]} ${parseInt(m[2])}, ${y}`;
+  }
+  return s;
+}
+
+// Bucketing logic
+function isSketch(r) { return /sketch/i.test(r.title) && r.title !== 'State Department UAP Cable 1, Papua New Guinea, January 28, 1985'; }
+function isFbiA(r)   { return r.type === 'IMG' && /^FBI Photo A\d/i.test(r.title); }
+function isFbiB(r)   { return r.type === 'PDF' && /^FBI Photo B\d/i.test(r.title); }
+function isNasaImg(r){ return r.type === 'IMG' && /NASA-UAP-VM/i.test(r.title); }
+function isOther(r)  {
+  // Western US Event slides + the PR (Unresolved UAP Report) modal images that are summary cards
+  return /western us event/i.test(r.title) || /^DOW-UAP-PR\d+,/.test(r.title);
+}
+
+const sketch = records.filter(isSketch);
+const fbiA   = records.filter(isFbiA);
+const fbiB   = records.filter(isFbiB).sort((a,b)=>{
+  const na = parseInt(a.title.match(/B(\d+)/)?.[1]||0);
+  const nb = parseInt(b.title.match(/B(\d+)/)?.[1]||0);
+  return na - nb;
+});
+const nasa   = records.filter(isNasaImg).sort((a,b)=> a.title.localeCompare(b.title, undefined, {numeric:true}));
+const other  = records.filter(isOther).filter(r => r.localThumb || r.localFile);
+
+document.getElementById('g-other-count').textContent = other.length + ' items';
+
+// All items in display order, for lightbox navigation
+const allItems = [];
+
+function makeCard(r, opts={}) {
+  // Decide preview source: prefer local high-res image for IMG records, else thumb
+  const isImage = /\.(png|jpe?g|gif|webp)$/i.test(r.localFile||'');
+  const previewSrc = (isImage ? r.localFile : r.localThumb) || r.localThumb;
+  const fullSrc = isImage ? r.localFile : (r.localThumb || r.localFile);
+  const sourceLink = r.localFile || r.fileUrl;
+  const isPdf = /\.pdf$/i.test(r.localFile||'');
+  const item = {
+    title: r.title,
+    desc: r.description || '',
+    incidentDate: fmtDate(r.incidentDate),
+    location: r.incidentLocation || 'location withheld',
+    agency: r.agency,
+    fullSrc,
+    sourceLink,
+    sourceLabel: isPdf ? 'Open PDF ↗' : 'Open original ↗'
+  };
+  allItems.push(item);
+  const idx = allItems.length - 1;
+
+  const card = document.createElement('div');
+  card.className = 'card' + (opts.featured ? ' featured' : '');
+  card.dataset.idx = idx;
+  card.innerHTML = `
+    <div class="badges">
+      ${(r.redaction||'').toUpperCase()==='TRUE' ? '<span class="badge redacted">redacted</span>' : ''}
+      ${opts.highres ? '<span class="badge highres">high-res</span>' : ''}
+      ${isPdf ? '<span class="badge">PDF</span>' : ''}
+    </div>
+    <div class="img-wrap">
+      <img loading="lazy" src="${previewSrc}" alt="${escapeHtml(r.title)}">
+    </div>
+    <div class="meta">
+      <div class="title">${escapeHtml(r.title)}</div>
+      <div class="sub">${escapeHtml(r.agency)} · ${escapeHtml(item.incidentDate)}${r.incidentLocation && r.incidentLocation!=='N/A' ? ' · '+escapeHtml(r.incidentLocation) : ''}</div>
+    </div>
+  `;
+  card.addEventListener('click', () => openLB(idx));
+  return card;
+}
+
+const gSketch = document.getElementById('grid-sketch');
+sketch.forEach(r => gSketch.appendChild(makeCard(r, {featured: true})));
+
+const gA = document.getElementById('grid-fbi-a');
+fbiA.forEach(r => gA.appendChild(makeCard(r)));
+
+const gN = document.getElementById('grid-nasa');
+nasa.forEach(r => gN.appendChild(makeCard(r, {highres: true})));
+
+const gB = document.getElementById('grid-fbi-b');
+fbiB.forEach(r => gB.appendChild(makeCard(r)));
+
+const gO = document.getElementById('grid-other');
+other.forEach(r => gO.appendChild(makeCard(r)));
+
+// Lightbox
+let lbIdx = 0;
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
+
+function openLB(idx) {
+  lbIdx = idx;
+  showLB();
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function navLB(delta) {
+  lbIdx = (lbIdx + delta + allItems.length) % allItems.length;
+  showLB();
+}
+function showLB() {
+  const it = allItems[lbIdx];
+  lbImg.src = it.fullSrc;
+  lbImg.alt = it.title;
+  document.getElementById('lb-ttl').textContent = it.title;
+  document.getElementById('lb-sub').textContent = `${it.agency} · ${it.incidentDate} · ${it.location}`;
+  document.getElementById('lb-desc').textContent = it.desc;
+  const link = document.getElementById('lb-source');
+  link.href = it.sourceLink;
+  link.textContent = it.sourceLabel;
+}
+window.closeLB = closeLB;
+window.navLB = navLB;
+
+lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+document.addEventListener('keydown', e => {
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLB();
+  else if (e.key === 'ArrowLeft') navLB(-1);
+  else if (e.key === 'ArrowRight') navLB(1);
+});
+})();
+</script>
+</body>
+</html>

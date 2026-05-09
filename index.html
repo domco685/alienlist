@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UAP Catalog — war.gov PURSUE Release 01 (5/8/26)</title>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMWGLV4CE9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RMWGLV4CE9');
+</script>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #11151d;
+    --panel2: #161b25;
+    --line: #232a39;
+    --text: #e6ecf3;
+    --muted: #8a93a3;
+    --accent: #ff8a3d;
+    --accent2: #4ec9ff;
+    --ok: #5dd39e;
+    --warn: #ffd166;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header { padding: 28px 32px 18px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #131826 0%, #0b0e14 100%); }
+  header h1 { margin: 0 0 6px; font-size: 22px; letter-spacing:.04em; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  header .nav { margin-top: 12px; display:flex; gap: 18px; flex-wrap: wrap; }
+  header .nav a { padding: 6px 12px; border:1px solid var(--line); border-radius: 6px; }
+  .summary { padding: 24px 32px; max-width: 1200px; }
+  .summary h2 { font-size: 17px; margin: 0 0 10px; color: var(--accent); letter-spacing:.04em; text-transform: uppercase; }
+  .summary p { margin: 6px 0 14px; color: #c9d1da; max-width: 80ch; }
+  .stats { display:grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: 12px; margin: 16px 0 24px; }
+  .stat { background: var(--panel); border:1px solid var(--line); padding:14px; border-radius: 8px; }
+  .stat .num { font-size: 26px; font-weight: 600; color: var(--accent2); }
+  .stat .lbl { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing:.05em; margin-top:4px; }
+  .filters { padding: 0 32px; max-width: 1400px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filters input, .filters select { background: var(--panel); color: var(--text); border:1px solid var(--line); border-radius: 6px; padding: 8px 10px; font: inherit; }
+  .filters input { min-width: 240px; }
+  .filters .count { color: var(--muted); margin-left: auto; }
+  .table-wrap { padding: 8px 32px 60px; max-width: 1400px; overflow-x:auto; }
+  table { width:100%; border-collapse: collapse; font-size: 13px; }
+  thead th { position: sticky; top: 0; background: var(--panel2); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); cursor: pointer; user-select: none; white-space: nowrap; }
+  thead th:hover { color: var(--accent); }
+  tbody td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:hover { background: rgba(78,201,255,0.05); }
+  td.title { font-weight: 500; max-width: 380px; }
+  td.desc { color: #c9d1da; max-width: 480px; }
+  td.desc .truncated { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  td.desc.expanded .truncated { -webkit-line-clamp: unset; }
+  td.desc button { background: none; border: 1px dashed var(--line); color: var(--accent2); border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; margin-top: 4px; }
+  .pill { display: inline-block; padding: 2px 7px; font-size: 11px; border-radius: 999px; border:1px solid var(--line); white-space: nowrap; }
+  .pill.PDF { color: #ffaa66; }
+  .pill.VID { color: #ff7d99; border-color: #5b2737; }
+  .pill.IMG { color: #93e0a4; }
+  .pill.agency { color: #c9d1da; }
+  .pill.redacted { color: var(--warn); border-color: #5d4a16; }
+  td.meta { white-space: nowrap; color: var(--muted); }
+  td.actions { white-space: nowrap; }
+  td.actions a { display: inline-block; margin-right: 6px; padding: 4px 8px; border:1px solid var(--line); border-radius: 4px; font-size: 12px; }
+  .thumb { width: 56px; height: 36px; object-fit: cover; border-radius: 3px; background: #222; }
+  footer { color: var(--muted); padding: 18px 32px 32px; font-size: 12px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>UAP CATALOG &mdash; PURSUE Release 01</h1>
+  <div class="sub">Presidential Unsealing and Reporting System for UAP Encounters &middot; U.S. Department of War &middot; declassified 8 May 2026</div>
+  <div class="nav">
+    <a href="index.html">Catalog</a>
+    <a href="map.html">3D Map</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source: war.gov/UFO ↗</a>
+  </div>
+</header>
+
+<section class="summary">
+  <h2>Executive Summary</h2>
+  <p>
+    On <strong>8 May 2026</strong>, the U.S. Department of War (formerly DoD) published its first release under the
+    Presidential directive to declassify government holdings on Unidentified Anomalous Phenomena (UAP, formerly UFOs).
+    This catalog mirrors all <strong>161 cataloged records</strong> from that release: <strong>119 PDFs</strong>,
+    <strong>28 video pairings</strong> (DVIDS), and <strong>14 image records</strong>, totaling <strong>~2.3&nbsp;GB</strong>
+    of source material from <strong>4 agencies</strong> (Department of War, FBI, NASA, Department of State).
+  </p>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="stat-records">—</div><div class="lbl">Records</div></div>
+    <div class="stat"><div class="num" id="stat-pdfs">—</div><div class="lbl">PDFs</div></div>
+    <div class="stat"><div class="num" id="stat-videos">—</div><div class="lbl">Video pairings</div></div>
+    <div class="stat"><div class="num" id="stat-redacted">—</div><div class="lbl">With redactions</div></div>
+    <div class="stat"><div class="num" id="stat-locations">—</div><div class="lbl">Distinct locations</div></div>
+    <div class="stat"><div class="num" id="stat-yearspan">—</div><div class="lbl">Year span</div></div>
+  </div>
+
+  <h2>What this release contains</h2>
+  <p><strong>FBI HQ case file 62-HQ-83894</strong> (~17 sections/serials, the largest single bloc in the release): the FBI's
+    central UFO investigative file covering June 1947 &ndash; July 1968. Includes high-profile incident reports, eyewitness
+    testimony, photographic evidence (notably from Oak Ridge, TN), technical proposals on potential propulsion, convention
+    programs, researcher correspondence, and contemporaneous press clippings. The Department of War notes this is the
+    <em>complete</em> case file (the FBI Vault copy is partial and more heavily redacted); several pages are newly declassified.</p>
+
+  <p><strong>Department of War &mdash; AARO holdings (~80 records).</strong> The All-domain Anomaly Resolution Office's standardized
+    intake formats dominate the modern era of the catalog: <em>Mission Reports (MISREPs)</em>, <em>Range Fouler Debriefs/Reporting
+    Forms</em>, and <em>Unresolved UAP Reports</em> (the "PR" series &mdash; PR-19 through PR-49). Geographic concentration is striking:
+    Iraq, Syria, Arabian Gulf, Strait of Hormuz, Gulf of Aden, Mediterranean Sea &mdash; almost all clustered in CENTCOM and
+    EUCOM operational theaters between 2020 and 2024. Many MISREP narratives are paired with declassified video clips.</p>
+
+  <p><strong>NASA records (15).</strong> Spaceflight reporting: a 1965 Gemini 7 transcript and audio excerpt of Frank
+    Borman's "unidentified object" sighting; Apollo 17 (1972) crew debriefs and lunar imagery; Skylab 1973 technical
+    debriefs; and a 1981 contractor study titled "UFOs and Defense: What Should We Prepare For?" (the COMETA report).</p>
+
+  <p><strong>Department of State (7).</strong> Diplomatic and intelligence cables, including the July 1963 Executive Office
+    of the President National Aeronautics and Space Council memorandum on "the space alien race question," and the
+    July 1952 memo cataloging explanations for the post-war UFO sighting wave.</p>
+
+  <p><strong>Department of War legacy files.</strong> Pre-1950 holdings include 1944&ndash;1945 SHAEF correspondence on
+    "night phenomena (foofighters)," the 415th Night Fighter Squadron observations; 1946&ndash;1948 Air Materiel Command
+    flying-disc memos; and the 1949 Flight Service Regulation 200-4 incident reports.</p>
+
+  <h2>Geographic Pattern</h2>
+  <p>Of the 36 distinct incident locations in the catalog, the heaviest concentrations are: <strong>Western United States (25)</strong>
+    &mdash; driven largely by the AARO "Western US Event" multi-witness 2023 case &mdash; <strong>Arabian Gulf (13)</strong>,
+    <strong>Syria (12)</strong>, <strong>Iraq (8)</strong>, and the <strong>Moon (8)</strong>. 43 records are geographically
+    unspecified ("N/A"), most of which are FBI HQ files with multi-event scope.</p>
+
+  <h2>Temporal Pattern</h2>
+  <p>The earliest cataloged event is 1944 (Wladyslaw Krasuski's Germany account, reported to FBI in 1957); the bulk of
+    incidents fall in <strong>2020 (12), 2023 (12), 2024 (8), and 2025 (34)</strong>, reflecting AARO's modern intake
+    pipeline. The 2025 spike is concentrated in the multi-witness Western US event series.</p>
+
+  <h2>What is &mdash; and isn't &mdash; here</h2>
+  <p>This is <em>Release&nbsp;01</em>. The Department of War describes it as the first tranche of an ongoing declassification
+    effort. Many MISREP and Range Fouler documents remain partially redacted (107 of 161 records are flagged with
+    redactions). The catalog includes both raw source material (FBI sections, MISREPs) and AARO-produced analytic products
+    (the "DOW-UAP-PR" Unresolved UAP Reports). Sensor data, names, units, and technical specifics are routinely withheld.</p>
+
+  <p style="color:var(--muted); font-size:12px;">All files in this archive are downloaded copies of the public release at war.gov/UFO/ as of the release date. Source URLs are preserved per record.</p>
+</section>
+
+<section class="filters">
+  <input id="q" placeholder="Search title, description, location…" />
+  <select id="agency"><option value="">All agencies</option></select>
+  <select id="type"><option value="">All types</option></select>
+  <select id="loc"><option value="">All locations</option></select>
+  <label style="display:flex;align-items:center;gap:6px;color:var(--muted);"><input type="checkbox" id="redactedOnly" /> redacted only</label>
+  <span class="count" id="count">—</span>
+</section>
+
+<div class="table-wrap">
+  <table id="catalog">
+    <thead>
+      <tr>
+        <th data-key="id">#</th>
+        <th data-key="title">Title</th>
+        <th data-key="agency">Agency</th>
+        <th data-key="type">Type</th>
+        <th data-key="incidentDate">Incident date</th>
+        <th data-key="incidentLocation">Location</th>
+        <th data-key="releaseDate">Release</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<footer>
+  Mirror of war.gov/UFO/ Release 01 (8 May 2026). Catalog parsed from <code>uap-csv.csv</code>. Files cached locally under <code>assets/pdf/</code> and <code>assets/thumb/</code>. Source DVIDS videos stay hosted at dvidshub.net.
+</footer>
+
+<script src="data.js"></script>
+<script>
+(async () => {
+await window.UAP_READY;
+const records = window.UAP_CATALOG;
+const geo = window.UAP_GEOCODE;
+
+// Stats
+function uniq(a){return Array.from(new Set(a));}
+const types = uniq(records.map(r=>r.type)).sort();
+const agencies = uniq(records.map(r=>r.agency)).sort();
+const locations = uniq(records.map(r=>r.incidentLocation)).sort();
+
+document.getElementById('stat-records').textContent = records.length;
+document.getElementById('stat-pdfs').textContent = records.filter(r=>r.type==='PDF').length;
+document.getElementById('stat-videos').textContent = records.filter(r=>r.type==='VID').length;
+document.getElementById('stat-redacted').textContent = records.filter(r=>(r.redaction||'').toUpperCase()==='TRUE').length;
+document.getElementById('stat-locations').textContent = locations.filter(l=>l && l!=='N/A').length;
+
+function parseYear(s){
+  if(!s) return null;
+  s = String(s).trim();
+  if (s==='N/A') return null;
+  const m4 = s.match(/\b(19|20)\d{2}\b/);
+  if (m4) return parseInt(m4[0]);
+  const m2 = s.match(/^\d{1,2}\/\d{1,2}\/(\d{2,4})/);
+  if (m2) {
+    let y = parseInt(m2[1]);
+    if (y < 100) y = y >= 30 ? 1900+y : 2000+y;
+    return y;
+  }
+  return null;
+}
+const years = records.map(r=>parseYear(r.incidentDate)).filter(Boolean);
+document.getElementById('stat-yearspan').textContent = years.length ? Math.min(...years)+'–'+Math.max(...years) : '—';
+
+// Filters
+const $ag = document.getElementById('agency');
+const $ty = document.getElementById('type');
+const $lc = document.getElementById('loc');
+agencies.forEach(a=>{ const o=document.createElement('option'); o.value=a; o.textContent=a; $ag.appendChild(o); });
+types.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; $ty.appendChild(o); });
+locations.forEach(l=>{ if(!l) return; const o=document.createElement('option'); o.value=l; o.textContent=l; $lc.appendChild(o); });
+
+let sortKey = 'id', sortDir = 1;
+
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const ag = $ag.value, ty = $ty.value, lc = $lc.value;
+  const ro = document.getElementById('redactedOnly').checked;
+  const tb = document.querySelector('#catalog tbody');
+  tb.innerHTML = '';
+  let filtered = records.filter(r=>{
+    if (ag && r.agency!==ag) return false;
+    if (ty && r.type!==ty) return false;
+    if (lc && r.incidentLocation!==lc) return false;
+    if (ro && (r.redaction||'').toUpperCase()!=='TRUE') return false;
+    if (q) {
+      const blob = (r.title+' '+r.description+' '+r.incidentLocation+' '+r.incidentDate+' '+r.agency).toLowerCase();
+      if (!blob.includes(q)) return false;
+    }
+    return true;
+  });
+  filtered.sort((a,b)=>{
+    let va=a[sortKey], vb=b[sortKey];
+    if (sortKey==='id'){ va=a.id; vb=b.id; }
+    va = (va||'').toString(); vb = (vb||'').toString();
+    return va.localeCompare(vb, undefined, {numeric:true}) * sortDir;
+  });
+  document.getElementById('count').textContent = filtered.length+' / '+records.length+' records';
+  for (const r of filtered) {
+    const tr = document.createElement('tr');
+    const desc = (r.description||'').slice(0, 1500);
+    const isRed = (r.redaction||'').toUpperCase()==='TRUE';
+    tr.innerHTML = `
+      <td>${r.id}</td>
+      <td class="title">
+        <div>${escapeHtml(r.title)}</div>
+        ${r.localThumb ? `<img class="thumb" loading="lazy" src="${r.localThumb}" alt="">` : ''}
+      </td>
+      <td><span class="pill agency">${escapeHtml(r.agency||'')}</span></td>
+      <td>
+        <span class="pill ${r.type}">${r.type}</span>
+        ${isRed ? '<span class="pill redacted">redacted</span>' : ''}
+      </td>
+      <td class="meta">${escapeHtml(r.incidentDate||'')}</td>
+      <td class="meta">${escapeHtml(r.incidentLocation||'')}</td>
+      <td class="meta">${escapeHtml(r.releaseDate||'')}</td>
+      <td class="desc"><div class="truncated">${escapeHtml(desc)}</div>${desc.length > 220 ? '<button>Expand</button>' : ''}</td>
+      <td class="actions">
+        ${r.localFile ? `<a href="${r.localFile}" target="_blank">PDF</a>` : ''}
+        ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank">Video</a>` : ''}
+        ${r.fileUrl && !r.localFile ? `<a href="${r.fileUrl}" target="_blank">Source</a>` : ''}
+      </td>
+    `;
+    const btn = tr.querySelector('button');
+    if (btn) btn.addEventListener('click', e=>{
+      const td = e.target.closest('td');
+      td.classList.toggle('expanded');
+      btn.textContent = td.classList.contains('expanded') ? 'Collapse' : 'Expand';
+    });
+    tb.appendChild(tr);
+  }
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.querySelectorAll('thead th[data-key]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const k = th.dataset.key;
+    if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = 1; }
+    render();
+  });
+});
+['q','agency','type','loc','redactedOnly'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+
+render();
+})();
+</script>
+</body>
+</html>
