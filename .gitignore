@@ -21,3 +21,12 @@ download.stdout.log
 
 # Memory / private workspace
 memory/
+
+# Python venv for summarize.py
+.venv/
+
+# Secrets — never commit
+.env
+.env.*
+.envrc
+*.key
