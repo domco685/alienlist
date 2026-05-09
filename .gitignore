@@ -30,3 +30,6 @@ memory/
 .env.*
 .envrc
 *.key
+
+# Claude Code scheduling lock
+.claude/scheduled_tasks.lock
