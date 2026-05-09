@@ -359,6 +359,43 @@
 
   .friendly-tag { color: var(--accent2); font-weight: 500; }
 
+  /* === From the Creator video === */
+  .creator-video {
+    max-width: 1000px;
+    margin: 12px auto 32px;
+    padding: 32px 32px 8px;
+  }
+  .creator-video h2 {
+    font-size: 16px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin: 0 0 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .creator-video p.sub {
+    color: var(--muted); font-size: 13px;
+    margin: 0 0 14px; max-width: 60ch;
+  }
+  .creator-video .video-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 28px rgba(0,0,0,.5);
+    background: #000;
+  }
+  .creator-video .video-frame iframe {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border: 0;
+  }
+  @media (max-width: 720px) {
+    .creator-video { padding: 18px 16px 0; }
+  }
+
   /* === Critical analysis section === */
   .analysis {
     max-width: 1200px;
@@ -665,6 +702,20 @@
 <div class="feed-wrap">
   <div class="feed" id="catalog-feed"></div>
 </div>
+
+<section class="creator-video">
+  <h2>🎥 From the Creator</h2>
+  <p class="sub">A short note on what this archive is, why it was built, and what to look for as Release 02 approaches.</p>
+  <div class="video-frame">
+    <iframe
+      src="https://www.youtube-nocookie.com/embed/YRt_megki4M?rel=0&modestbranding=1"
+      title="From the Creator — alienlist"
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen></iframe>
+  </div>
+</section>
 
 <footer>
   Mirror of war.gov/UFO/ Release 01 (8 May 2026). Catalog parsed from <code>uap-csv.csv</code>. Files cached locally under <code>assets/pdf/</code> and <code>assets/thumb/</code>. Source DVIDS videos stay hosted at dvidshub.net. <span class="friendly-tag">👽 thanks for stopping by</span>
