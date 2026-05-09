@@ -32,9 +32,11 @@ function rateLimited(ip) {
 }
 
 async function upstash(path, body) {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error('Upstash env vars not configured');
+  // Accepts either Upstash-native env vars or Vercel KV's (same Upstash Redis
+  // under the hood, just renamed). Whichever the integration injected.
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  if (!url || !token) throw new Error('Redis env vars not configured');
   const res = await fetch(`${url}/${path}`, {
     method: body ? 'POST' : 'GET',
     headers: {
