@@ -34,6 +34,29 @@ python3 summarize.py                            # ~30–90 min, ~$10–25 in API
 
 The script is resumable — re-runs skip records already in `summaries.json`. After it finishes, redeploy and the cards instantly show LLM summaries.
 
+## Email signups (Vercel + Upstash Redis)
+
+The "Stay informed" widget posts to `/api/subscribe` (Vercel serverless function) which writes to Upstash Redis.
+
+**One-time setup in the Vercel dashboard:**
+1. Open this project → **Storage** → **Marketplace** → **Upstash Redis** → **Add Integration**
+2. Connect it to the project (free tier — 10k commands/day)
+3. Vercel auto-injects `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. No code changes.
+4. Redeploy.
+
+**Reading the email list later:**
+```bash
+# All unique emails:
+curl -H "Authorization: Bearer $UPSTASH_REDIS_REST_TOKEN" \
+     "$UPSTASH_REDIS_REST_URL/smembers/alienlist:emails"
+
+# With timestamps (newest first):
+curl -H "Authorization: Bearer $UPSTASH_REDIS_REST_TOKEN" \
+     "$UPSTASH_REDIS_REST_URL/zrange/alienlist:emails:by_time/0/-1/REV/WITHSCORES"
+```
+
+GA tracks both `email_modal_shown` (widget expanded) and `email_signup_submitted` (form submitted) so you can see the funnel.
+
 ## Files
 
 | Path | Purpose |

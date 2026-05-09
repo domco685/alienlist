@@ -1,0 +1,113 @@
+/* Stay-informed email signup widget — replaces BMC across all pages.
+   Posts to /api/subscribe (Vercel serverless function backed by Upstash Redis).
+   Has 3 visual states: pill (collapsed) → form (expanded) → success. */
+.si-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+  background: linear-gradient(135deg, #4ec9ff 0%, #6c5ce7 100%);
+  color: #0b0e14;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(78,201,255,.45), 0 0 0 0 rgba(78,201,255,.5);
+  font: 600 13px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  border: 0;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform .18s, box-shadow .18s;
+  animation: si-pulse 3s ease-in-out infinite;
+}
+.si-widget:hover {
+  transform: translateY(-2px) scale(1.02);
+  animation-play-state: paused;
+}
+@keyframes si-pulse {
+  0%, 100% { box-shadow: 0 6px 20px rgba(78,201,255,.45), 0 0 0 0 rgba(78,201,255,.5); }
+  60% { box-shadow: 0 6px 20px rgba(78,201,255,.45), 0 0 0 14px rgba(78,201,255,0); }
+}
+
+.si-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 18px;
+}
+.si-pill .si-icon {
+  font-size: 16px; line-height: 1;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.3));
+}
+.si-pill-text { font-weight: 600; }
+
+.si-form, .si-success {
+  display: none;
+  padding: 14px;
+  width: 280px;
+  background: #11151d;
+  color: #e6ecf3;
+  border-radius: 12px;
+}
+.si-widget.expanded { padding: 0; cursor: default; animation: none; }
+.si-widget.expanded .si-pill { display: none; }
+.si-widget.expanded.error .si-form,
+.si-widget.expanded:not(.success):not(.error) .si-form { display: block; }
+.si-widget.expanded.success .si-success { display: block; }
+
+.si-form .si-title {
+  font-size: 14px; font-weight: 600;
+  color: var(--accent2, #4ec9ff);
+  margin-bottom: 4px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.si-form .si-title button {
+  background: none; border: 0; color: #8a93a3;
+  font-size: 18px; cursor: pointer; line-height: 1; padding: 0;
+}
+.si-form .si-title button:hover { color: #e6ecf3; }
+.si-form .si-sub {
+  font-size: 11px; color: #8a93a3;
+  margin-bottom: 10px;
+}
+.si-form input[type="email"] {
+  width: 100%;
+  background: #0b0e14;
+  border: 1px solid #232a39;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit; font-size: 13px; color: #e6ecf3;
+  outline: none;
+  transition: border-color .12s;
+}
+.si-form input[type="email"]:focus {
+  border-color: var(--accent2, #4ec9ff);
+}
+.si-form button.si-submit {
+  width: 100%;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #4ec9ff 0%, #6c5ce7 100%);
+  color: #0b0e14;
+  border: 0; border-radius: 8px;
+  padding: 10px;
+  font: 600 13px/1 inherit;
+  cursor: pointer;
+  transition: transform .12s;
+}
+.si-form button.si-submit:hover { transform: scale(1.02); }
+.si-form button.si-submit:disabled { opacity: .55; cursor: wait; transform: none; }
+.si-form .si-error {
+  margin-top: 8px; font-size: 11px; color: #ff7d99;
+  display: none;
+}
+.si-widget.error .si-form .si-error { display: block; }
+.si-success {
+  text-align: center;
+  padding: 20px 16px;
+}
+.si-success .si-emoji { font-size: 28px; margin-bottom: 8px; }
+.si-success .si-msg { font-size: 13px; color: #e6ecf3; }
+.si-success .si-msg strong { color: var(--accent2, #4ec9ff); }
+.si-success .si-tip { font-size: 11px; color: #8a93a3; margin-top: 8px; }
+
+@media (max-width: 720px) {
+  .si-widget { bottom: 14px; right: 14px; }
+  .si-form, .si-success { width: 240px; padding: 12px; }
+  .si-pill { padding: 10px 14px; font-size: 12px; }
+}
+body.embed .si-widget { display: none; }
