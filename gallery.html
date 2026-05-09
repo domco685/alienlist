@@ -323,8 +323,12 @@ function isFbiA(r)   { return r.type === 'IMG' && /^FBI Photo A\d/i.test(r.title
 function isFbiB(r)   { return r.type === 'PDF' && /^FBI Photo B\d/i.test(r.title); }
 function isNasaImg(r){ return r.type === 'IMG' && /NASA-UAP-VM/i.test(r.title); }
 function isOther(r)  {
-  // Western US Event slides + the PR (Unresolved UAP Report) modal images that are summary cards
-  return /western us event/i.test(r.title) || /^DOW-UAP-PR\d+,/.test(r.title);
+  // Western US Event slides + the PR (Unresolved UAP Report) modal images that are summary cards.
+  // Require an actual image — VID-paired records' localFile is a PDF, not usable as a card.
+  if (!(/western us event/i.test(r.title) || /^DOW-UAP-PR\d+,/.test(r.title))) return false;
+  if (r.localThumb) return true;
+  if (r.localFile && /\.(png|jpe?g|gif|webp)$/i.test(r.localFile)) return true;
+  return false;
 }
 
 const sketch = records.filter(isSketch);
@@ -384,6 +388,9 @@ function makeCard(r, opts={}) {
     </div>
   `;
   card.addEventListener('click', () => openLB(idx));
+  // Defensive: if the image fails to load anyway, drop the card so we never show a broken thumb.
+  const cardImg = card.querySelector('img');
+  if (cardImg) cardImg.addEventListener('error', () => { card.remove(); allItems.splice(idx, 1); }, { once: true });
   return card;
 }
 

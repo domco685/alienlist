@@ -346,12 +346,13 @@ const map = new maplibregl.Map({
       { id: 'labels',  type: 'raster', source: 'world-labels',  paint: { 'raster-opacity': 0.7 } }
     ]
   },
-  center: [25, 30],
-  zoom: 1.8,
+  // Embed defaults to a US-focused view (homepage hero); standalone shows both
+  // hemispheres with US visible on the left.
+  center: isEmbed ? [-100, 40] : [-30, 35],
+  zoom: isEmbed ? 2.7 : 1.7,
   minZoom: 1.5,
   maxPitch: 80,
   hash: false,
-  // Embed mode: non-interactive — used as homepage hero
   interactive: !isEmbed,
   attributionControl: !isEmbed
 });

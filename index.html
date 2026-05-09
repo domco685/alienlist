@@ -50,10 +50,35 @@
   table { width:100%; border-collapse: collapse; font-size: 13px; }
   thead th { position: sticky; top: 0; background: var(--panel2); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); cursor: pointer; user-select: none; white-space: nowrap; }
   thead th:hover { color: var(--accent); }
+  tbody tr {
+    cursor: pointer;
+    transition: background .12s, box-shadow .12s;
+  }
+  tbody tr:hover { background: rgba(78,201,255,0.07); box-shadow: inset 3px 0 0 var(--accent); }
+  tbody tr:hover td.title .open-arrow { opacity: 1; transform: translateX(0); }
   tbody td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  tbody tr:hover { background: rgba(78,201,255,0.05); }
-  td.title { font-weight: 500; max-width: 380px; }
-  td.desc { color: #c9d1da; max-width: 480px; }
+  td.title { font-weight: 500; max-width: 360px; }
+  td.title .title-text {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text);
+  }
+  td.title .open-arrow {
+    color: var(--accent);
+    font-size: 14px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity .12s, transform .12s;
+  }
+  td.title .row-links {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+  }
+  td.title .row-links a {
+    font-size: 11px; padding: 2px 8px;
+    border: 1px solid var(--line); border-radius: 4px;
+    color: var(--accent2); text-decoration: none;
+  }
+  td.title .row-links a:hover { border-color: var(--accent); color: var(--accent); }
+  td.desc { color: #c9d1da; max-width: 420px; font-size: 12px; }
   td.desc .truncated { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   td.desc.expanded .truncated { -webkit-line-clamp: unset; }
   td.desc button { background: none; border: 1px dashed var(--line); color: var(--accent2); border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; margin-top: 4px; }
@@ -64,9 +89,10 @@
   .pill.agency { color: #c9d1da; }
   .pill.redacted { color: var(--warn); border-color: #5d4a16; }
   td.meta { white-space: nowrap; color: var(--muted); }
-  td.actions { white-space: nowrap; }
-  td.actions a { display: inline-block; margin-right: 6px; padding: 4px 8px; border:1px solid var(--line); border-radius: 4px; font-size: 12px; }
-  .thumb { width: 56px; height: 36px; object-fit: cover; border-radius: 3px; background: #222; }
+  .thumb { width: 56px; height: 36px; object-fit: cover; border-radius: 3px; background: #222; margin-top: 6px; display: block; }
+  @media (max-width: 980px) {
+    td.desc { display: none; }
+  }
   footer { color: var(--muted); padding: 18px 32px 32px; font-size: 12px; border-top: 1px solid var(--line); }
 
   /* === Hero map preview === */
@@ -130,6 +156,84 @@
     .hero-map { aspect-ratio: 4/3; }
     .hero-meta { gap: 10px; }
     .hero-meta .hero-cta { padding: 8px 14px; font-size: 12px; }
+  }
+
+  /* === Curated visual slideshow (below the hero map) === */
+  .slideshow-wrap {
+    max-width: 1400px;
+    margin: 24px auto 0;
+    padding: 0 32px;
+  }
+  .slideshow {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #000;
+    aspect-ratio: 16/7;
+    max-height: 480px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.5);
+  }
+  .slideshow-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; gap: 12px; flex-wrap: wrap;
+  }
+  .slideshow-header .title { color: var(--accent); font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .slideshow-header .sub { color: var(--muted); font-size: 12px; }
+  .slideshow-header a {
+    color: var(--accent2); font-size: 12px; padding: 6px 12px;
+    border: 1px solid var(--line); border-radius: 999px; text-decoration: none;
+  }
+  .slideshow-header a:hover { border-color: var(--accent2); }
+  .slide {
+    position: absolute; inset: 0;
+    opacity: 0;
+    transition: opacity .8s ease-in-out;
+    background-size: cover; background-position: center; background-color: #000;
+  }
+  .slide.active { opacity: 1; }
+  .slide-caption {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 16px 20px;
+    background: linear-gradient(180deg, rgba(11,14,20,0) 0%, rgba(11,14,20,.92) 100%);
+    color: var(--text);
+  }
+  .slide-caption .cap-ttl { font-weight: 600; font-size: 14px; }
+  .slide-caption .cap-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .slideshow-controls {
+    position: absolute; bottom: 14px; right: 14px;
+    display: flex; gap: 6px; z-index: 4;
+  }
+  .slideshow-controls button {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+  .slideshow-controls button:hover { background: rgba(0,0,0,.85); border-color: var(--accent); }
+  .slideshow-dots {
+    position: absolute; bottom: 16px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 6px; z-index: 3;
+    pointer-events: none;
+  }
+  .slideshow-dots .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,.35);
+    transition: width .25s, background .25s;
+  }
+  .slideshow-dots .dot.active { width: 22px; background: var(--accent); }
+  .slide-link {
+    position: absolute; inset: 0;
+    z-index: 2;
+    text-decoration: none;
+  }
+  @media (max-width: 720px) {
+    .slideshow-wrap { padding: 0 16px; margin-top: 18px; }
+    .slideshow { aspect-ratio: 4/3; }
   }
 
   /* === Friendly alien stickers (decorative) === */
@@ -363,6 +467,17 @@
   </a>
 </section>
 
+<section class="slideshow-wrap" id="slideshow-wrap">
+  <div class="slideshow-header">
+    <div>
+      <div class="title">📷 What it looked like</div>
+      <div class="sub">Hand-picked imagery from the release — composite sketch, NASA Apollo lunar shots, FBI stills</div>
+    </div>
+    <a href="gallery.html" data-event="nav_click" data-target="gallery">Open full gallery →</a>
+  </div>
+  <div class="slideshow" id="slideshow"></div>
+</section>
+
 <section class="summary">
   <h2>Executive Summary</h2>
   <p>
@@ -491,14 +606,12 @@
     <thead>
       <tr>
         <th data-key="id">#</th>
-        <th data-key="title">Title</th>
+        <th data-key="title">Title &mdash; click row to open</th>
         <th data-key="agency">Agency</th>
         <th data-key="type">Type</th>
         <th data-key="incidentDate">Incident date</th>
         <th data-key="incidentLocation">Location</th>
-        <th data-key="releaseDate">Release</th>
         <th>Description</th>
-        <th></th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -603,10 +716,23 @@ function render(){
     const tr = document.createElement('tr');
     const desc = (r.description||'').slice(0, 1500);
     const isRed = (r.redaction||'').toUpperCase()==='TRUE';
+    const primaryHref = r.localFile || r.fileUrl || r.dvidsUrl || '';
+    if (primaryHref) tr.dataset.primaryHref = primaryHref;
+    tr.dataset.recordId = r.id;
+    tr.dataset.agency = r.agency || '';
+    tr.dataset.incidentLocation = r.incidentLocation || '';
     tr.innerHTML = `
       <td>${r.id}</td>
       <td class="title">
-        <div>${escapeHtml(r.title)}</div>
+        <div class="title-text">
+          <span>${escapeHtml(r.title)}</span>
+          <span class="open-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="row-links">
+          ${r.localFile ? `<a href="${r.localFile}" target="_blank" data-event="pdf_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-incident-location="${escapeHtml(r.incidentLocation || '')}" data-source="${r.localFile === r.fileUrl ? 'war_gov' : 'local'}" onclick="event.stopPropagation()">📄 Open PDF</a>` : ''}
+          ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank" data-event="video_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-dvids-id="${r.dvidsVideoId}" onclick="event.stopPropagation()">🎥 Video</a>` : ''}
+          ${r.fileUrl && !r.localFile ? `<a href="${r.fileUrl}" target="_blank" data-event="source_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" onclick="event.stopPropagation()">↗ Source</a>` : ''}
+        </div>
         ${r.localThumb ? `<img class="thumb" loading="lazy" src="${r.localThumb}" alt="">` : ''}
       </td>
       <td><span class="pill agency">${escapeHtml(r.agency||'')}</span></td>
@@ -616,16 +742,23 @@ function render(){
       </td>
       <td class="meta">${escapeHtml(r.incidentDate||'')}</td>
       <td class="meta">${escapeHtml(r.incidentLocation||'')}</td>
-      <td class="meta">${escapeHtml(r.releaseDate||'')}</td>
       <td class="desc"><div class="truncated">${escapeHtml(desc)}</div>${desc.length > 220 ? '<button>Expand</button>' : ''}</td>
-      <td class="actions">
-        ${r.localFile ? `<a href="${r.localFile}" target="_blank" data-event="pdf_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-incident-location="${escapeHtml(r.incidentLocation || '')}" data-source="${r.localFile === r.fileUrl ? 'war_gov' : 'local'}">PDF</a>` : ''}
-        ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank" data-event="video_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-dvids-id="${r.dvidsVideoId}">Video</a>` : ''}
-        ${r.fileUrl && !r.localFile ? `<a href="${r.fileUrl}" target="_blank" data-event="source_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}">Source</a>` : ''}
-      </td>
     `;
+    // Whole row clickable → opens primary file (PDF preferred, else video). Skip if click landed on a link/button (those have stopPropagation).
+    if (primaryHref) {
+      tr.addEventListener('click', () => {
+        track('row_open', {
+          record_id: String(r.id),
+          agency: r.agency || '',
+          incident_location: (r.incidentLocation || '').slice(0, 60),
+          target: r.localFile ? 'pdf' : (r.dvidsUrl ? 'video' : 'source')
+        });
+        window.open(primaryHref, '_blank', 'noopener');
+      });
+    }
     const btn = tr.querySelector('button');
     if (btn) btn.addEventListener('click', e=>{
+      e.stopPropagation();
       const td = e.target.closest('td');
       td.classList.toggle('expanded');
       btn.textContent = td.classList.contains('expanded') ? 'Collapse' : 'Expand';
@@ -680,6 +813,70 @@ document.getElementById('q').addEventListener('input', () => {
 });
 
 render();
+
+// === Curated image slideshow ===
+const SLIDE_TITLES = [
+  'FBI September 2023 Sighting - Composite Sketch',
+  'NASA-UAP-VM5, Apollo 12, 1969',
+  'NASA-UAP-VM6, Apollo 17, 1972',
+  'FBI Photo A1',
+  'FBI Photo A5',
+  'NASA-UAP-VM2, Apollo 12, 1969',
+  'FBI Photo A3',
+  'NASA-UAP-VM1, Apollo 12, 1969'
+];
+const slides = SLIDE_TITLES
+  .map(t => records.find(r => r.title === t))
+  .filter(Boolean)
+  .map(r => {
+    const isImage = /\.(png|jpe?g|gif|webp)$/i.test(r.localFile||'');
+    return {
+      src: isImage ? r.localFile : (r.localThumb || r.localFile),
+      title: r.title,
+      sub: `${r.agency} · ${r.incidentDate || 'date withheld'}${r.incidentLocation && r.incidentLocation!=='N/A' ? ' · '+r.incidentLocation : ''}`,
+      recordId: r.id
+    };
+  });
+const ssEl = document.getElementById('slideshow');
+if (slides.length && ssEl) {
+  ssEl.innerHTML = slides.map((s, i) => `
+    <div class="slide${i===0?' active':''}" style="background-image:url('${s.src}')"></div>
+  `).join('') + `
+    <a href="gallery.html" class="slide-link" aria-label="Open full gallery" data-event="slideshow_click"></a>
+    <div class="slide-caption">
+      <div class="cap-ttl" id="slide-ttl">${escapeHtml(slides[0].title)}</div>
+      <div class="cap-sub" id="slide-sub">${escapeHtml(slides[0].sub)}</div>
+    </div>
+    <div class="slideshow-dots" id="slide-dots">${slides.map((_,i)=>`<span class="dot${i===0?' active':''}"></span>`).join('')}</div>
+    <div class="slideshow-controls">
+      <button id="slide-prev" aria-label="Previous slide">‹</button>
+      <button id="slide-pause" aria-label="Pause">⏸</button>
+      <button id="slide-next" aria-label="Next slide">›</button>
+    </div>
+  `;
+  let idx = 0, paused = false, timer;
+  const slideEls = ssEl.querySelectorAll('.slide');
+  const dotEls = ssEl.querySelectorAll('.dot');
+  const ttlEl = document.getElementById('slide-ttl');
+  const subEl = document.getElementById('slide-sub');
+  function go(n) {
+    idx = (n + slides.length) % slides.length;
+    slideEls.forEach((el, i) => el.classList.toggle('active', i === idx));
+    dotEls.forEach((el, i) => el.classList.toggle('active', i === idx));
+    ttlEl.textContent = slides[idx].title;
+    subEl.textContent = slides[idx].sub;
+  }
+  function tick() { if (!paused) go(idx + 1); }
+  function reset() { clearInterval(timer); timer = setInterval(tick, 4500); }
+  reset();
+  document.getElementById('slide-prev').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); go(idx - 1); reset(); });
+  document.getElementById('slide-next').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); go(idx + 1); reset(); });
+  document.getElementById('slide-pause').addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    paused = !paused;
+    e.currentTarget.textContent = paused ? '▶' : '⏸';
+  });
+}
 })();
 </script>
 </body>
