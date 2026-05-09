@@ -73,6 +73,37 @@
   .hero {
     max-width: 1400px; margin: 0 auto; padding: 24px 32px 0;
   }
+  .hero-meta {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .hero-meta-text { flex: 1 1 320px; min-width: 0; }
+  .hero-meta-text .hero-title {
+    font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--accent); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .hero-meta-text .hero-stat {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px;
+    font-size: 11px; color: var(--muted); text-transform: none; letter-spacing: 0;
+  }
+  .hero-meta-text .hero-stat .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 8px var(--accent);
+    animation: stamp-pulse 2s ease-in-out infinite;
+  }
+  .hero-meta-text .hero-sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .hero-meta .hero-cta {
+    flex: 0 0 auto;
+    background: var(--accent); color: #1a1408;
+    padding: 9px 18px; border-radius: 999px;
+    font-weight: 600; font-size: 13px;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 14px rgba(255,138,61,.35);
+  }
+  .hero-meta .hero-cta:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255,138,61,.55); text-decoration: none; }
+
   .hero-map {
     position: relative;
     display: block;
@@ -92,39 +123,14 @@
     border-color: var(--accent);
     box-shadow: 0 12px 36px rgba(0,0,0,.6), 0 0 0 1px rgba(255,138,61,.3);
   }
-  .hero-map iframe {
-    width: 100%; height: 100%;
-    border: 0;
-    display: block;
-    pointer-events: none;
-  }
-  .hero-map .hero-overlay {
-    position: absolute; left: 0; right: 0; bottom: 0;
-    padding: 18px 22px;
-    background: linear-gradient(180deg, rgba(11,14,20,0) 0%, rgba(11,14,20,.85) 70%, rgba(11,14,20,.95) 100%);
-    color: var(--text);
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    flex-wrap: wrap;
-  }
-  .hero-map .hero-title { font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
-  .hero-map .hero-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
-  .hero-map .hero-cta {
-    background: var(--accent); color: #1a1408;
-    padding: 8px 16px; border-radius: 999px;
-    font-weight: 600; font-size: 13px;
-    transition: transform .15s;
-  }
-  .hero-map:hover .hero-cta { transform: scale(1.05); }
-  .hero-map .hero-stamp {
-    position: absolute; top: 14px; left: 14px;
-    background: rgba(11,14,20,.7); backdrop-filter: blur(6px);
-    padding: 6px 10px; border-radius: 999px;
-    border: 1px solid var(--line);
-    font-size: 11px; color: var(--muted);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .hero-map .hero-stamp .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: stamp-pulse 2s ease-in-out infinite; }
+  .hero-map iframe { width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
   @keyframes stamp-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+  @media (max-width: 720px) {
+    .hero { padding: 16px 16px 0; }
+    .hero-map { aspect-ratio: 4/3; }
+    .hero-meta { gap: 10px; }
+    .hero-meta .hero-cta { padding: 8px 14px; font-size: 12px; }
+  }
 
   /* === Friendly alien stickers (decorative) === */
   .alien-stickers {
@@ -204,24 +210,26 @@
   <h1>👽 UAP CATALOG &mdash; PURSUE Release 01</h1>
   <div class="sub">Presidential Unsealing and Reporting System for UAP Encounters &middot; U.S. Department of War &middot; declassified 8 May 2026 &middot; <span class="friendly-tag">aliens are friends 🛸</span></div>
   <div class="nav">
-    <a href="index.html">Catalog</a>
-    <a href="map.html">🗺️ Map</a>
-    <a href="gallery.html">🖼️ Gallery</a>
-    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source: war.gov/UFO ↗</a>
+    <a href="index.html" data-event="nav_click" data-target="catalog">Catalog</a>
+    <a href="map.html" data-event="nav_click" data-target="map">🗺️ Map</a>
+    <a href="gallery.html" data-event="nav_click" data-target="gallery">🖼️ Gallery</a>
+    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener" data-event="outbound_click" data-target="war_gov">Source: war.gov/UFO ↗</a>
   </div>
 </header>
 
 <section class="hero">
-  <a class="hero-map" href="map.html" aria-label="Open the full interactive map">
-    <iframe src="map.html?embed=1" loading="lazy" tabindex="-1" title="UAP map preview"></iframe>
-    <div class="hero-stamp"><span class="dot"></span> 114 incident pins · 36 locations</div>
-    <div class="hero-overlay">
-      <div>
-        <div class="hero-title">Where the encounters happened 🛸</div>
-        <div class="hero-sub">Every cataloged UAP location, jittered within its regional uncertainty radius</div>
+  <div class="hero-meta">
+    <div class="hero-meta-text">
+      <div class="hero-title">
+        <span>Where the encounters happened 🛸</span>
+        <span class="hero-stat"><span class="dot"></span> 114 incident pins · 36 locations</span>
       </div>
-      <span class="hero-cta">Open full map →</span>
+      <div class="hero-sub">Every cataloged UAP location, jittered within its regional uncertainty radius</div>
     </div>
+    <a class="hero-cta" href="map.html" data-event="hero_map_click" data-source="cta">Open full map →</a>
+  </div>
+  <a class="hero-map" href="map.html" aria-label="Open the full interactive map" data-event="hero_map_click" data-source="iframe">
+    <iframe src="map.html?embed=1" loading="lazy" tabindex="-1" title="UAP map preview"></iframe>
   </a>
 </section>
 
@@ -321,12 +329,28 @@
   Mirror of war.gov/UFO/ Release 01 (8 May 2026). Catalog parsed from <code>uap-csv.csv</code>. Files cached locally under <code>assets/pdf/</code> and <code>assets/thumb/</code>. Source DVIDS videos stay hosted at dvidshub.net. <span class="friendly-tag">👽 thanks for stopping by</span>
 </footer>
 
-<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee">
+<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee" data-event="bmc_click" data-from-page="catalog">
   <span class="bmc-icon">☕</span><span>Buy me a coffee</span>
 </a>
 
 <script src="data.js"></script>
 <script>
+// --- GA event tracking ---
+function track(name, params = {}) {
+  if (typeof gtag === 'function') gtag('event', name, params);
+}
+const _camelToSnake = s => s.replace(/([A-Z])/g, '_$1').toLowerCase();
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-event]');
+  if (!el) return;
+  const params = {};
+  for (const k of Object.keys(el.dataset)) {
+    if (k === 'event') continue;
+    params[_camelToSnake(k)] = String(el.dataset[k]).slice(0, 95);
+  }
+  track(el.dataset.event, params);
+}, true);
+
 (async () => {
 await window.UAP_READY;
 const records = window.UAP_CATALOG;
@@ -415,9 +439,9 @@ function render(){
       <td class="meta">${escapeHtml(r.releaseDate||'')}</td>
       <td class="desc"><div class="truncated">${escapeHtml(desc)}</div>${desc.length > 220 ? '<button>Expand</button>' : ''}</td>
       <td class="actions">
-        ${r.localFile ? `<a href="${r.localFile}" target="_blank">PDF</a>` : ''}
-        ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank">Video</a>` : ''}
-        ${r.fileUrl && !r.localFile ? `<a href="${r.fileUrl}" target="_blank">Source</a>` : ''}
+        ${r.localFile ? `<a href="${r.localFile}" target="_blank" data-event="pdf_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-incident-location="${escapeHtml(r.incidentLocation || '')}" data-source="${r.localFile === r.fileUrl ? 'war_gov' : 'local'}">PDF</a>` : ''}
+        ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank" data-event="video_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-dvids-id="${r.dvidsVideoId}">Video</a>` : ''}
+        ${r.fileUrl && !r.localFile ? `<a href="${r.fileUrl}" target="_blank" data-event="source_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}">Source</a>` : ''}
       </td>
     `;
     const btn = tr.querySelector('button');
@@ -425,6 +449,9 @@ function render(){
       const td = e.target.closest('td');
       td.classList.toggle('expanded');
       btn.textContent = td.classList.contains('expanded') ? 'Collapse' : 'Expand';
+      if (td.classList.contains('expanded')) {
+        track('description_expand', { record_id: String(r.id), agency: r.agency });
+      }
     });
     tb.appendChild(tr);
   }
@@ -444,6 +471,32 @@ document.querySelectorAll('thead th[data-key]').forEach(th=>{
 ['q','agency','type','loc','redactedOnly'].forEach(id=>{
   document.getElementById(id).addEventListener('input', render);
   document.getElementById(id).addEventListener('change', render);
+});
+
+// Filter/search analytics — debounce search, fire change-events for selects/checkbox immediately
+let _searchTimer;
+document.getElementById('q').addEventListener('input', () => {
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(() => {
+    const q = document.getElementById('q').value.trim();
+    if (!q) return;
+    track('catalog_search', {
+      query: q.slice(0, 50),
+      results: parseInt(document.getElementById('count').textContent) || 0
+    });
+  }, 900);
+});
+[['agency','agency'],['type','type'],['loc','location'],['redactedOnly','redacted_only']].forEach(([id, label]) => {
+  document.getElementById(id).addEventListener('change', () => {
+    const el = document.getElementById(id);
+    const value = el.type === 'checkbox' ? (el.checked ? 'true' : 'false') : el.value;
+    if (!value || value === 'false') return;
+    track('catalog_filter', {
+      filter_type: label,
+      filter_value: String(value).slice(0, 50),
+      results: parseInt(document.getElementById('count').textContent) || 0
+    });
+  });
 });
 
 render();

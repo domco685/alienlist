@@ -216,9 +216,9 @@
   <h1>UAP MAP &mdash; PURSUE Release 01</h1>
   <div class="sub">36 incident locations across 161 catalog records &middot; click any pin for details</div>
   <div class="nav">
-    <a href="index.html">Catalog</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source ↗</a>
+    <a href="index.html" data-event="nav_click" data-target="catalog">Catalog</a>
+    <a href="gallery.html" data-event="nav_click" data-target="gallery">Gallery</a>
+    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener" data-event="outbound_click" data-target="war_gov">Source ↗</a>
   </div>
 </header>
 
@@ -240,12 +240,28 @@
   <div style="margin-top:6px;font-size:11px;color:#666">Number badge = # records at that location</div>
 </div>
 
-<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee">
+<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee" data-event="bmc_click" data-from-page="map">
   <span class="bmc-icon">☕</span><span>Buy me a coffee</span>
 </a>
 
 <script src="data.js"></script>
 <script>
+// --- GA event tracking ---
+function track(name, params = {}) {
+  if (typeof gtag === 'function') gtag('event', name, params);
+}
+const _camelToSnake = s => s.replace(/([A-Z])/g, '_$1').toLowerCase();
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-event]');
+  if (!el) return;
+  const params = {};
+  for (const k of Object.keys(el.dataset)) {
+    if (k === 'event') continue;
+    params[_camelToSnake(k)] = String(el.dataset[k]).slice(0, 95);
+  }
+  track(el.dataset.event, params);
+}, true);
+
 (async function(){
 await window.UAP_READY;
 const isEmbed = new URLSearchParams(location.search).get('embed') === '1';
@@ -371,6 +387,12 @@ function makeMarker(loc, record, idx, totalAtLoc) {
     ev.stopPropagation();
     openSingle(record, loc);
     map.flyTo({ center: coord, zoom: Math.max(map.getZoom(), 5), speed: 0.8 });
+    if (!isEmbed) track('pin_click', {
+      record_id: String(record.id),
+      agency: record.agency || '',
+      record_type: record.type || '',
+      incident_location: loc.slice(0, 60)
+    });
   });
   return { el, marker: m, loc, record, coord };
 }
@@ -392,8 +414,9 @@ function escapeHtml(s){
 
 function renderIncident(r, opts={}) {
   const desc = (r.description||'').replace(/\s+/g,' ').trim();
+  const dataAttrs = `data-record-id="${r.id}" data-agency="${escapeHtml(r.agency||'')}" data-incident-location="${escapeHtml(r.incidentLocation||'')}"`;
   return `
-    <div class="incident${opts.expanded?' expanded':''}">
+    <div class="incident${opts.expanded?' expanded':''}" data-record-id="${r.id}">
       <div class="row1">
         <span class="date">${escapeHtml(fmtDate(r.incidentDate))}</span>
         <span>·</span>
@@ -405,9 +428,9 @@ function renderIncident(r, opts={}) {
       <div class="desc">${escapeHtml(desc)}</div>
       ${desc.length > 280 && !opts.expanded ? '<span class="more">show more ▾</span>' : ''}
       <div class="links">
-        ${r.localFile ? `<a href="${r.localFile}" target="_blank">Open PDF</a>` : ''}
-        ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank">DVIDS Video</a>` : ''}
-        ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank">Source</a>` : ''}
+        ${r.localFile ? `<a href="${r.localFile}" target="_blank" data-event="pdf_open" ${dataAttrs} data-source="${r.localFile === r.fileUrl ? 'war_gov' : 'local'}">Open PDF</a>` : ''}
+        ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank" data-event="video_open" ${dataAttrs} data-dvids-id="${r.dvidsVideoId}">DVIDS Video</a>` : ''}
+        ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" data-event="source_open" ${dataAttrs}>Source</a>` : ''}
       </div>
     </div>`;
 }
@@ -418,6 +441,9 @@ function wireIncidentToggles() {
       const inc = el.closest('.incident');
       inc.classList.toggle('expanded');
       el.textContent = inc.classList.contains('expanded') ? 'show less ▴' : 'show more ▾';
+      if (inc.classList.contains('expanded')) {
+        track('description_expand', { record_id: inc.dataset.recordId || '' });
+      }
     });
   });
 }
@@ -435,7 +461,11 @@ function openSingle(r, loc) {
   panelBody.innerHTML = renderIncident(r, { expanded: true });
   wireIncidentToggles();
   const showAll = document.getElementById('show-all-loc');
-  if (showAll) showAll.addEventListener('click', ev => { ev.preventDefault(); openLocation(loc, items); });
+  if (showAll) showAll.addEventListener('click', ev => {
+    ev.preventDefault();
+    track('cluster_view', { incident_location: loc.slice(0, 60), count: String(items.length) });
+    openLocation(loc, items);
+  });
   panel.classList.add('open');
 }
 
@@ -451,14 +481,22 @@ function openLocation(loc, items) {
 
 // Search
 const $search = document.getElementById('search');
+let _mapSearchTimer;
 $search.addEventListener('input', () => {
   const q = $search.value.trim().toLowerCase();
+  let visibleCount = 0;
   for (const m of markers) {
-    if (!q) { m.el.style.display = ''; continue; }
+    if (!q) { m.el.style.display = ''; visibleCount++; continue; }
     const r = m.record;
     const hit = (r.title+' '+r.description+' '+r.agency+' '+r.incidentDate+' '+m.loc).toLowerCase().includes(q);
     m.el.style.display = hit ? '' : 'none';
+    if (hit) visibleCount++;
   }
+  // Debounced analytics
+  clearTimeout(_mapSearchTimer);
+  if (q) _mapSearchTimer = setTimeout(() => {
+    track('map_search', { query: q.slice(0, 50), results: String(visibleCount) });
+  }, 900);
 });
 
 // Click-anywhere closes panel

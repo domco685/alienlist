@@ -211,10 +211,10 @@
   <h1>👽 UAP GALLERY &mdash; PURSUE Release 01</h1>
   <div class="sub">Visual evidence from the 8 May 2026 declassification &middot; FBI still images, NASA lunar photographs, and FBI Lab composite sketch</div>
   <div class="nav">
-    <a href="index.html">Catalog</a>
-    <a href="map.html">🗺️ Map</a>
-    <a class="active" href="gallery.html">🖼️ Gallery</a>
-    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source: war.gov/UFO ↗</a>
+    <a href="index.html" data-event="nav_click" data-target="catalog">Catalog</a>
+    <a href="map.html" data-event="nav_click" data-target="map">🗺️ Map</a>
+    <a class="active" href="gallery.html" data-event="nav_click" data-target="gallery">🖼️ Gallery</a>
+    <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener" data-event="outbound_click" data-target="war_gov">Source: war.gov/UFO ↗</a>
   </div>
 </header>
 
@@ -276,12 +276,28 @@
   Mirror of war.gov/UFO/ Release 01 (8 May 2026). Visual artifacts cached locally under <code>assets/pdf/</code> (originals) and <code>assets/thumb/</code> (thumbnails). 👽 thanks for stopping by
 </footer>
 
-<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee">
+<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee" data-event="bmc_click" data-from-page="gallery">
   <span class="bmc-icon">☕</span><span>Buy me a coffee</span>
 </a>
 
 <script src="data.js"></script>
 <script>
+// --- GA event tracking ---
+function track(name, params = {}) {
+  if (typeof gtag === 'function') gtag('event', name, params);
+}
+const _camelToSnake = s => s.replace(/([A-Z])/g, '_$1').toLowerCase();
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-event]');
+  if (!el) return;
+  const params = {};
+  for (const k of Object.keys(el.dataset)) {
+    if (k === 'event') continue;
+    params[_camelToSnake(k)] = String(el.dataset[k]).slice(0, 95);
+  }
+  track(el.dataset.event, params);
+}, true);
+
 (async function(){
 await window.UAP_READY;
 const records = window.UAP_CATALOG;
@@ -341,7 +357,11 @@ function makeCard(r, opts={}) {
     agency: r.agency,
     fullSrc,
     sourceLink,
-    sourceLabel: isPdf ? 'Open PDF ↗' : 'Open original ↗'
+    sourceLabel: isPdf ? 'Open PDF ↗' : 'Open original ↗',
+    sourceEvent: isPdf ? 'pdf_open' : 'source_open',
+    galleryGroup: opts.group || '',
+    recordId: r.id,
+    redacted: (r.redaction||'').toUpperCase() === 'TRUE'
   };
   allItems.push(item);
   const idx = allItems.length - 1;
@@ -368,19 +388,19 @@ function makeCard(r, opts={}) {
 }
 
 const gSketch = document.getElementById('grid-sketch');
-sketch.forEach(r => gSketch.appendChild(makeCard(r, {featured: true})));
+sketch.forEach(r => gSketch.appendChild(makeCard(r, {featured: true, group: 'sketch'})));
 
 const gA = document.getElementById('grid-fbi-a');
-fbiA.forEach(r => gA.appendChild(makeCard(r)));
+fbiA.forEach(r => gA.appendChild(makeCard(r, {group: 'fbi_a'})));
 
 const gN = document.getElementById('grid-nasa');
-nasa.forEach(r => gN.appendChild(makeCard(r, {highres: true})));
+nasa.forEach(r => gN.appendChild(makeCard(r, {highres: true, group: 'nasa_apollo'})));
 
 const gB = document.getElementById('grid-fbi-b');
-fbiB.forEach(r => gB.appendChild(makeCard(r)));
+fbiB.forEach(r => gB.appendChild(makeCard(r, {group: 'fbi_b'})));
 
 const gO = document.getElementById('grid-other');
-other.forEach(r => gO.appendChild(makeCard(r)));
+other.forEach(r => gO.appendChild(makeCard(r, {group: 'other'})));
 
 // Lightbox
 let lbIdx = 0;
@@ -392,6 +412,12 @@ function openLB(idx) {
   showLB();
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
+  const it = allItems[lbIdx];
+  track('gallery_image_view', {
+    record_id: String(it.recordId || ''),
+    agency: it.agency || '',
+    gallery_group: it.galleryGroup || ''
+  });
 }
 function closeLB() {
   lb.classList.remove('open');
@@ -400,6 +426,7 @@ function closeLB() {
 function navLB(delta) {
   lbIdx = (lbIdx + delta + allItems.length) % allItems.length;
   showLB();
+  track('gallery_image_navigate', { direction: delta > 0 ? 'next' : 'prev' });
 }
 function showLB() {
   const it = allItems[lbIdx];
@@ -411,6 +438,11 @@ function showLB() {
   const link = document.getElementById('lb-source');
   link.href = it.sourceLink;
   link.textContent = it.sourceLabel;
+  // Make the source link tracked with full record context
+  link.setAttribute('data-event', it.sourceEvent);
+  link.setAttribute('data-record-id', String(it.recordId || ''));
+  link.setAttribute('data-agency', it.agency || '');
+  link.setAttribute('data-gallery-group', it.galleryGroup || '');
 }
 window.closeLB = closeLB;
 window.navLB = navLB;
