@@ -42,56 +42,142 @@
   .stat { background: var(--panel); border:1px solid var(--line); padding:14px; border-radius: 8px; }
   .stat .num { font-size: 26px; font-weight: 600; color: var(--accent2); }
   .stat .lbl { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing:.05em; margin-top:4px; }
-  .filters { padding: 0 32px; max-width: 1400px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filters { padding: 0 32px; max-width: 1400px; margin: 0 auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .filters input, .filters select { background: var(--panel); color: var(--text); border:1px solid var(--line); border-radius: 6px; padding: 8px 10px; font: inherit; }
   .filters input { min-width: 240px; }
-  .filters .count { color: var(--muted); margin-left: auto; }
-  .table-wrap { padding: 8px 32px 60px; max-width: 1400px; overflow-x:auto; }
-  table { width:100%; border-collapse: collapse; font-size: 13px; }
-  thead th { position: sticky; top: 0; background: var(--panel2); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); cursor: pointer; user-select: none; white-space: nowrap; }
-  thead th:hover { color: var(--accent); }
-  tbody tr {
-    cursor: pointer;
-    transition: background .12s, box-shadow .12s;
+  .filters .count { color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+  /* === Catalog as card feed === */
+  .feed-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 14px 32px 60px;
   }
-  tbody tr:hover { background: rgba(78,201,255,0.07); box-shadow: inset 3px 0 0 var(--accent); }
-  tbody tr:hover td.title .open-arrow { opacity: 1; transform: translateX(0); }
-  tbody td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  td.title { font-weight: 500; max-width: 360px; }
-  td.title .title-text {
-    display: inline-flex; align-items: center; gap: 6px;
-    color: var(--text);
+  .feed {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 16px;
   }
-  td.title .open-arrow {
-    color: var(--accent);
-    font-size: 14px;
-    opacity: 0;
-    transform: translateX(-4px);
-    transition: opacity .12s, transform .12s;
-  }
-  td.title .row-links {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
-  }
-  td.title .row-links a {
-    font-size: 11px; padding: 2px 8px;
-    border: 1px solid var(--line); border-radius: 4px;
-    color: var(--accent2); text-decoration: none;
-  }
-  td.title .row-links a:hover { border-color: var(--accent); color: var(--accent); }
-  td.desc { color: #c9d1da; max-width: 420px; font-size: 12px; }
-  td.desc .truncated { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  td.desc.expanded .truncated { -webkit-line-clamp: unset; }
-  td.desc button { background: none; border: 1px dashed var(--line); color: var(--accent2); border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; margin-top: 4px; }
-  .pill { display: inline-block; padding: 2px 7px; font-size: 11px; border-radius: 999px; border:1px solid var(--line); white-space: nowrap; }
+  .pill { display: inline-block; padding: 2px 8px; font-size: 11px; border-radius: 999px; border:1px solid var(--line); white-space: nowrap; line-height: 1.6; }
   .pill.PDF { color: #ffaa66; }
   .pill.VID { color: #ff7d99; border-color: #5b2737; }
   .pill.IMG { color: #93e0a4; }
   .pill.agency { color: #c9d1da; }
   .pill.redacted { color: var(--warn); border-color: #5d4a16; }
-  td.meta { white-space: nowrap; color: var(--muted); }
-  .thumb { width: 56px; height: 36px; object-fit: cover; border-radius: 3px; background: #222; margin-top: 6px; display: block; }
-  @media (max-width: 980px) {
-    td.desc { display: none; }
+
+  .rcard {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex; flex-direction: column;
+    gap: 10px;
+    transition: border-color .15s, transform .15s;
+    position: relative;
+  }
+  .rcard:hover { border-color: rgba(78,201,255,.35); transform: translateY(-1px); }
+  .rcard .rc-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .rcard .rc-id { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+  .rcard h3.rc-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text);
+    word-break: break-word;
+  }
+  .rcard .rc-meta {
+    color: var(--muted); font-size: 12px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .rcard .rc-meta .sep { opacity: .5; }
+  .rcard .rc-thumb {
+    width: 100%; max-height: 130px; object-fit: cover; border-radius: 6px;
+    background: #181b22; margin-top: 2px;
+  }
+
+  .rcard .rc-tabs {
+    display: flex; gap: 2px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: -1px;
+  }
+  .rcard .rc-tabs button {
+    background: transparent; border: 0; color: var(--muted);
+    padding: 6px 10px;
+    font: 600 11px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    text-transform: uppercase; letter-spacing: .04em;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .rcard .rc-tabs button:hover { color: var(--text); }
+  .rcard .rc-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .rcard .rc-tabs .upgrade-hint {
+    margin-left: auto;
+    font-size: 10px; color: var(--muted);
+    padding: 4px 8px; align-self: center;
+    border: 1px dashed var(--line); border-radius: 999px;
+    text-transform: none; letter-spacing: 0; font-weight: 400;
+  }
+
+  .rcard .rc-body {
+    color: #c9d1da; font-size: 13px; line-height: 1.55;
+    flex: 1;
+  }
+  .rcard .rc-body .truncated { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+  .rcard .rc-body.expanded .truncated { -webkit-line-clamp: unset; }
+  .rcard .rc-body.expanded { white-space: pre-wrap; }
+  .rcard .rc-body .show-more {
+    background: none; border: 0; color: var(--accent2);
+    padding: 4px 0 0; font: inherit; font-size: 12px; cursor: pointer;
+  }
+  .rcard .rc-body .show-more:hover { color: var(--accent); }
+
+  .rcard .rc-quote {
+    border-left: 3px solid var(--accent2);
+    background: rgba(78,201,255,.04);
+    padding: 8px 12px; margin: 8px 0;
+    color: #d8e0ec; font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  .rcard .rc-key-facts {
+    margin: 6px 0 0; padding: 0 0 0 18px;
+    font-size: 12px; color: #c9d1da;
+  }
+  .rcard .rc-key-facts li { margin: 2px 0; }
+  .rcard .rc-transcript {
+    background: rgba(0,0,0,.35);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 10px 12px;
+    font: 12px/1.5 ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    max-height: 240px; overflow-y: auto;
+    white-space: pre-wrap; color: #b8bfc9;
+  }
+
+  .rcard .rc-actions {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 4px;
+    border-top: 1px solid var(--line);
+  }
+  .rcard .rc-actions a {
+    font-size: 12px; padding: 6px 12px;
+    border: 1px solid var(--line); border-radius: 6px;
+    color: var(--text); text-decoration: none;
+    display: inline-flex; gap: 6px; align-items: center;
+    transition: border-color .12s, color .12s, background .12s;
+  }
+  .rcard .rc-actions a.primary {
+    background: var(--accent); color: #1a1408; border-color: var(--accent);
+    font-weight: 600;
+  }
+  .rcard .rc-actions a.primary:hover { transform: scale(1.02); }
+  .rcard .rc-actions a:hover { border-color: var(--accent); color: var(--accent); }
+  .rcard .rc-actions a.primary:hover { color: #1a1408; }
+
+  @media (max-width: 720px) {
+    .feed-wrap { padding: 10px 16px 40px; }
+    .feed { grid-template-columns: 1fr; gap: 12px; }
   }
   footer { color: var(--muted); padding: 18px 32px 32px; font-size: 12px; border-top: 1px solid var(--line); }
 
@@ -601,21 +687,8 @@
   <span class="count" id="count">—</span>
 </section>
 
-<div class="table-wrap">
-  <table id="catalog">
-    <thead>
-      <tr>
-        <th data-key="id">#</th>
-        <th data-key="title">Title &mdash; click row to open</th>
-        <th data-key="agency">Agency</th>
-        <th data-key="type">Type</th>
-        <th data-key="incidentDate">Incident date</th>
-        <th data-key="incidentLocation">Location</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<div class="feed-wrap">
+  <div class="feed" id="catalog-feed"></div>
 </div>
 
 <footer>
@@ -686,101 +759,124 @@ agencies.forEach(a=>{ const o=document.createElement('option'); o.value=a; o.tex
 types.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; $ty.appendChild(o); });
 locations.forEach(l=>{ if(!l) return; const o=document.createElement('option'); o.value=l; o.textContent=l; $lc.appendChild(o); });
 
-let sortKey = 'id', sortDir = 1;
+// Try to load LLM summaries (generated by `python3 summarize.py`). Cards
+// auto-upgrade to show TL;DR + verbatim quotes + transcript when this is present.
+let summaries = {};
+fetch('summaries.json').then(r => r.ok ? r.json() : null).then(j => {
+  if (j) { summaries = j; render(); }
+}).catch(() => {});
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 function render(){
   const q = document.getElementById('q').value.trim().toLowerCase();
   const ag = $ag.value, ty = $ty.value, lc = $lc.value;
   const ro = document.getElementById('redactedOnly').checked;
-  const tb = document.querySelector('#catalog tbody');
-  tb.innerHTML = '';
+  const feed = document.getElementById('catalog-feed');
+  feed.innerHTML = '';
   let filtered = records.filter(r=>{
     if (ag && r.agency!==ag) return false;
     if (ty && r.type!==ty) return false;
     if (lc && r.incidentLocation!==lc) return false;
     if (ro && (r.redaction||'').toUpperCase()!=='TRUE') return false;
     if (q) {
-      const blob = (r.title+' '+r.description+' '+r.incidentLocation+' '+r.incidentDate+' '+r.agency).toLowerCase();
+      const summary = summaries[r.id] || {};
+      const blob = (r.title+' '+r.description+' '+r.incidentLocation+' '+r.incidentDate+' '+r.agency+' '+(summary.tldr||'')+' '+(summary.transcript||'')).toLowerCase();
       if (!blob.includes(q)) return false;
     }
     return true;
   });
-  filtered.sort((a,b)=>{
-    let va=a[sortKey], vb=b[sortKey];
-    if (sortKey==='id'){ va=a.id; vb=b.id; }
-    va = (va||'').toString(); vb = (vb||'').toString();
-    return va.localeCompare(vb, undefined, {numeric:true}) * sortDir;
-  });
   document.getElementById('count').textContent = filtered.length+' / '+records.length+' records';
-  for (const r of filtered) {
-    const tr = document.createElement('tr');
-    const desc = (r.description||'').slice(0, 1500);
-    const isRed = (r.redaction||'').toUpperCase()==='TRUE';
-    const primaryHref = r.localFile || r.fileUrl || r.dvidsUrl || '';
-    if (primaryHref) tr.dataset.primaryHref = primaryHref;
-    tr.dataset.recordId = r.id;
-    tr.dataset.agency = r.agency || '';
-    tr.dataset.incidentLocation = r.incidentLocation || '';
-    tr.innerHTML = `
-      <td>${r.id}</td>
-      <td class="title">
-        <div class="title-text">
-          <span>${escapeHtml(r.title)}</span>
-          <span class="open-arrow" aria-hidden="true">↗</span>
-        </div>
-        <div class="row-links">
-          ${r.localFile ? `<a href="${r.localFile}" target="_blank" data-event="pdf_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-incident-location="${escapeHtml(r.incidentLocation || '')}" data-source="${r.localFile === r.fileUrl ? 'war_gov' : 'local'}" onclick="event.stopPropagation()">📄 Open PDF</a>` : ''}
-          ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank" data-event="video_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-dvids-id="${r.dvidsVideoId}" onclick="event.stopPropagation()">🎥 Video</a>` : ''}
-          ${r.fileUrl && !r.localFile ? `<a href="${r.fileUrl}" target="_blank" data-event="source_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" onclick="event.stopPropagation()">↗ Source</a>` : ''}
-        </div>
-        ${r.localThumb ? `<img class="thumb" loading="lazy" src="${r.localThumb}" alt="">` : ''}
-      </td>
-      <td><span class="pill agency">${escapeHtml(r.agency||'')}</span></td>
-      <td>
-        <span class="pill ${r.type}">${r.type}</span>
-        ${isRed ? '<span class="pill redacted">redacted</span>' : ''}
-      </td>
-      <td class="meta">${escapeHtml(r.incidentDate||'')}</td>
-      <td class="meta">${escapeHtml(r.incidentLocation||'')}</td>
-      <td class="desc"><div class="truncated">${escapeHtml(desc)}</div>${desc.length > 220 ? '<button>Expand</button>' : ''}</td>
-    `;
-    // Whole row clickable → opens primary file (PDF preferred, else video). Skip if click landed on a link/button (those have stopPropagation).
-    if (primaryHref) {
-      tr.addEventListener('click', () => {
-        track('row_open', {
-          record_id: String(r.id),
-          agency: r.agency || '',
-          incident_location: (r.incidentLocation || '').slice(0, 60),
-          target: r.localFile ? 'pdf' : (r.dvidsUrl ? 'video' : 'source')
-        });
-        window.open(primaryHref, '_blank', 'noopener');
+  for (const r of filtered) feed.appendChild(makeCard(r));
+}
+
+function makeCard(r) {
+  const isRed = (r.redaction||'').toUpperCase()==='TRUE';
+  const sum = summaries[r.id];
+  const card = document.createElement('article');
+  card.className = 'rcard';
+  card.dataset.recordId = r.id;
+
+  const meta = [r.incidentDate || 'date withheld', r.incidentLocation && r.incidentLocation !== 'N/A' ? r.incidentLocation : null]
+    .filter(Boolean).map(escapeHtml).join('<span class="sep">·</span>');
+
+  const tabs = [];
+  tabs.push({ id: 'summary', label: sum ? 'TL;DR' : 'Summary', active: true });
+  if (sum && sum.quotes && sum.quotes.length) tabs.push({ id: 'quotes', label: 'Verbatim quotes' });
+  if (sum && sum.transcript) tabs.push({ id: 'transcript', label: 'Source text' });
+
+  const description = (r.description || '').trim();
+  const tldr = sum?.tldr || description;
+
+  card.innerHTML = `
+    <div class="rc-head">
+      <span class="pill agency">${escapeHtml(r.agency||'')}</span>
+      <span class="pill ${r.type}">${r.type}</span>
+      ${isRed ? '<span class="pill redacted">redacted</span>' : ''}
+      <span class="rc-id">#${r.id}</span>
+    </div>
+    <h3 class="rc-title">${escapeHtml(r.title)}</h3>
+    <div class="rc-meta">${meta || '<span style="opacity:.6">—</span>'}</div>
+    ${r.localThumb ? `<img class="rc-thumb" loading="lazy" src="${r.localThumb}" alt="">` : ''}
+
+    <div class="rc-tabs" role="tablist">
+      ${tabs.map(t => `<button data-tab="${t.id}"${t.active?' class="active"':''}>${t.label}</button>`).join('')}
+      ${!sum ? '<span class="upgrade-hint" title="Run summarize.py to generate LLM summaries with verbatim quotes">+ AI summary soon</span>' : ''}
+    </div>
+
+    <div class="rc-body" data-pane="summary">
+      <div class="truncated">${escapeHtml(tldr) || '<em style="color:var(--muted)">No summary yet — open the PDF for the full document.</em>'}</div>
+      ${tldr.length > 280 ? '<button class="show-more">Show full summary</button>' : ''}
+      ${sum && sum.key_facts && sum.key_facts.length ? `
+        <ul class="rc-key-facts">${sum.key_facts.map(f => `<li>${escapeHtml(f)}</li>`).join('')}</ul>
+      ` : ''}
+    </div>
+
+    ${sum && sum.quotes && sum.quotes.length ? `
+    <div class="rc-body" data-pane="quotes" hidden>
+      ${sum.quotes.map(q => `<div class="rc-quote">${escapeHtml(q)}</div>`).join('')}
+    </div>` : ''}
+
+    ${sum && sum.transcript ? `
+    <div class="rc-body" data-pane="transcript" hidden>
+      <div class="rc-transcript">${escapeHtml(sum.transcript)}</div>
+    </div>` : ''}
+
+    <div class="rc-actions">
+      ${r.localFile ? `<a class="primary" href="${r.localFile}" target="_blank" data-event="pdf_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-incident-location="${escapeHtml(r.incidentLocation || '')}" data-source="${r.localFile === r.fileUrl ? 'war_gov' : 'local'}">📄 Open full PDF</a>` : ''}
+      ${r.dvidsUrl ? `<a href="${r.dvidsUrl}" target="_blank" data-event="video_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}" data-dvids-id="${r.dvidsVideoId}">🎥 DVIDS Video</a>` : ''}
+      ${r.fileUrl && !r.localFile ? `<a href="${r.fileUrl}" target="_blank" data-event="source_open" data-record-id="${r.id}" data-agency="${escapeHtml(r.agency)}">↗ Source</a>` : ''}
+    </div>
+  `;
+
+  // Tab switching
+  card.querySelectorAll('.rc-tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      card.querySelectorAll('.rc-tabs button').forEach(b => b.classList.toggle('active', b === btn));
+      const active = btn.dataset.tab;
+      card.querySelectorAll('.rc-body').forEach(b => {
+        b.hidden = b.dataset.pane !== active;
       });
-    }
-    const btn = tr.querySelector('button');
-    if (btn) btn.addEventListener('click', e=>{
-      e.stopPropagation();
-      const td = e.target.closest('td');
-      td.classList.toggle('expanded');
-      btn.textContent = td.classList.contains('expanded') ? 'Collapse' : 'Expand';
-      if (td.classList.contains('expanded')) {
+      track('card_tab', { tab: active, record_id: String(r.id), agency: r.agency || '' });
+    });
+  });
+
+  // Show-more on summary
+  const moreBtn = card.querySelector('.show-more');
+  if (moreBtn) {
+    moreBtn.addEventListener('click', () => {
+      const body = moreBtn.closest('.rc-body');
+      body.classList.toggle('expanded');
+      moreBtn.textContent = body.classList.contains('expanded') ? 'Show less' : 'Show full summary';
+      if (body.classList.contains('expanded')) {
         track('description_expand', { record_id: String(r.id), agency: r.agency });
       }
     });
-    tb.appendChild(tr);
   }
+  return card;
 }
-
-function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-document.querySelectorAll('thead th[data-key]').forEach(th=>{
-  th.addEventListener('click', ()=>{
-    const k = th.dataset.key;
-    if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = 1; }
-    render();
-  });
-});
 ['q','agency','type','loc','redactedOnly'].forEach(id=>{
   document.getElementById(id).addEventListener('input', render);
   document.getElementById(id).addEventListener('change', render);
