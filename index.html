@@ -193,6 +193,136 @@
   }
 
   .friendly-tag { color: var(--accent2); font-weight: 500; }
+
+  /* === Critical analysis section === */
+  .analysis {
+    max-width: 1200px;
+    margin: 8px auto 0;
+    padding: 32px;
+    border-top: 1px solid var(--line);
+  }
+  .analysis-inner {
+    background: linear-gradient(180deg, rgba(78,201,255,0.04) 0%, rgba(11,14,20,0) 60%);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent2);
+    border-radius: 10px;
+    padding: 28px 32px;
+  }
+  .analysis h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .analysis .lede {
+    color: #c9d1da;
+    margin: 0 0 24px;
+    font-size: 14px;
+    max-width: 80ch;
+  }
+  .analysis h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--accent);
+    margin: 28px 0 10px;
+  }
+  .analysis p { margin: 6px 0 12px; color: #c9d1da; max-width: 80ch; }
+  .analysis blockquote {
+    margin: 14px 0;
+    padding: 14px 18px;
+    border-left: 3px solid var(--warn);
+    background: rgba(255,209,102,0.05);
+    color: #e6dfb8;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.55;
+    border-radius: 0 6px 6px 0;
+  }
+  .analysis blockquote .attribution {
+    display: block;
+    margin-top: 8px;
+    font-style: normal;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .analysis ol.threads {
+    list-style: none;
+    counter-reset: thread;
+    padding: 0;
+    margin: 12px 0 0;
+    display: grid;
+    gap: 14px;
+  }
+  .analysis ol.threads li {
+    counter-increment: thread;
+    padding: 16px 18px 16px 56px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    position: relative;
+    font-size: 14px;
+    color: #c9d1da;
+    max-width: none;
+    line-height: 1.55;
+  }
+  .analysis ol.threads li::before {
+    content: counter(thread);
+    position: absolute;
+    left: 14px; top: 14px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent2);
+    color: #061018;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .analysis ol.threads li .thread-title {
+    display: block;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .analysis ul.missing {
+    margin: 8px 0 0; padding: 0; list-style: none;
+    display: grid; gap: 8px;
+  }
+  .analysis ul.missing li {
+    padding: 8px 14px 8px 32px;
+    color: #c9d1da;
+    font-size: 13px;
+    position: relative;
+    border-left: 2px solid var(--warn);
+    background: rgba(255,209,102,0.03);
+  }
+  .analysis ul.missing li::before {
+    content: "✕";
+    position: absolute; left: 10px; top: 8px;
+    color: var(--warn);
+    font-weight: 700;
+  }
+  .analysis .takeaway {
+    margin-top: 28px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, rgba(255,138,61,0.08) 0%, rgba(78,201,255,0.06) 100%);
+    border: 1px solid rgba(255,138,61,0.25);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .analysis .takeaway strong { color: var(--accent); display: block; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  @media (max-width: 720px) {
+    .analysis { padding: 16px; }
+    .analysis-inner { padding: 18px; }
+    .analysis ol.threads li { padding: 14px 14px 14px 48px; }
+    .analysis ol.threads li::before { left: 10px; top: 12px; width: 26px; height: 26px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -295,6 +425,56 @@
     (the "DOW-UAP-PR" Unresolved UAP Reports). Sensor data, names, units, and technical specifics are routinely withheld.</p>
 
   <p style="color:var(--muted); font-size:12px;">All files in this archive are downloaded copies of the public release at war.gov/UFO/ as of the release date. Source URLs are preserved per record.</p>
+</section>
+
+<section class="analysis">
+  <div class="analysis-inner">
+    <h2>Signal vs. Noise — What This Release Actually Shows</h2>
+    <p class="lede">Don't oversell this as &ldquo;disclosure.&rdquo; Most of the catalog is procedural boilerplate or stale eyewitness reports. But four threads in this release are genuinely worth your attention &mdash; and what's <em>missing</em> matters as much as what's here.</p>
+
+    <h3>The boilerplate problem</h3>
+    <p>107 of 161 records are flagged redacted. Nearly every modern AARO Mission Report description ends with the <em>same</em> legal disclaimer:</p>
+
+    <blockquote>
+      &ldquo;All descriptive and estimative language contained in this report reflects the reporter's subjective interpretation at the time of the event. Such characterizations should not be interpreted as a conclusive indication of the presence or absence of any intrinsic object features or performance characteristics.&rdquo;
+      <span class="attribution">— Standard AARO MISREP disclaimer</span>
+    </blockquote>
+
+    <p>Translation: AARO is publishing what was <em>reported</em>, not vouching for any of it. No raw sensor data. No FLIR/radar tracks. No material samples. No conclusions. The &ldquo;data&rdquo; is mostly trained observers describing lights, orbs, and misshapen blobs &mdash; you could swap half the descriptions with each other and barely notice.</p>
+
+    <h3>The four genuinely non-trivial threads</h3>
+    <ol class="threads">
+      <li>
+        <span class="thread-title">The geographic clustering is the most data-driven finding in the whole release.</span>
+        Iraq (8) + Syria (12) + Arabian Gulf (13) + Strait of Hormuz + Gulf of Aden + Mediterranean + Arabian Sea ≈ <strong>48 reports, all CENTCOM/EUCOM operating theaters between 2020&ndash;2024</strong>. The most prosaic explanation isn't aliens &mdash; it's that US Navy/Air Force pilots flying surveillance against Iran/Russia/China are seeing <em>something</em>, and the most likely candidates are advanced adversary drones, hypersonics, or sensor-spoofing tech. The interesting question this release raises isn't &ldquo;what are aliens doing in Iraq?&rdquo; &mdash; it's <strong>&ldquo;why has CENTCOM had 48 unresolved aerial intrusions in 4 years?&rdquo;</strong>
+      </li>
+      <li>
+        <span class="thread-title">The Western US Event 2023 (25 records).</span>
+        AARO themselves call this &ldquo;among the most compelling&rdquo; in their holdings &mdash; <strong>seven federal employees, independently, across two days</strong>, reporting &ldquo;orbs launching other orbs,&rdquo; large stationary glowing orbs at close range, and a &ldquo;translucent kite.&rdquo; But they openly admit there's <em>no technical data</em>. It hangs entirely on multi-witness credibility. That's still better than single-pilot anecdotes &mdash; but it's not science, it's testimony.
+      </li>
+      <li>
+        <span class="thread-title">The 1944 Krasuski / Germany account (FBI 100-DE-26505).</span>
+        A man told the FBI in 1957 he saw a &ldquo;large, circular, vertically-rising vehicle&rdquo; near a German military compound in 1944. This actually fits the foo-fighter / Horten / Operation Paperclip narrative &mdash; quite plausibly <em>real</em> late-war German experimental aircraft (Horten Ho 229 flying wing, Sack AS-6, etc.) misidentified or memory-distorted. Interesting historically; not interesting if you're hunting non-human intelligence.
+      </li>
+      <li>
+        <span class="thread-title">The 1963 Executive Office of the President &ldquo;alien race question&rdquo; memo.</span>
+        Most genuinely surprising document in the release. The Executive Office of the President was, on paper, contingency-planning for alien intelligence discovery in 1963 &mdash; what to do if it happens, scientific implications, public reaction. That's a <strong>political/cultural artifact</strong>: it tells you what senior officials thought worth thinking about, not what they had evidence of.
+      </li>
+    </ol>
+
+    <h3>What's pointedly missing</h3>
+    <ul class="missing">
+      <li>Zero <strong>raw sensor data</strong> released &mdash; the qualitative debrief is published; the quantitative FMV/radar/IR is withheld every single time</li>
+      <li>Zero <strong>material analysis</strong> &mdash; no debris, no metallurgy, no spectroscopy</li>
+      <li>Zero <strong>technical performance characteristics</strong> confirmed &mdash; every description hedges with &ldquo;reportedly&rdquo; / &ldquo;the observer perceived&rdquo; / &ldquo;estimated&rdquo;</li>
+      <li>The NASA Apollo &ldquo;areas of interest&rdquo; photos are pre-existing archival images with rectangles drawn around dots that <em>might</em> be lens flares, panel reflections, or the S-IVB stage. NASA isn't claiming they're anomalous &mdash; just that they're &ldquo;under review.&rdquo;</li>
+    </ul>
+
+    <div class="takeaway">
+      <strong>The honest framing</strong>
+      Release 01 is a <em>transparency milestone</em>, not a smoking gun. AARO has a real reporting pipeline, it's generated 130+ formal reports in 4 years, and most are unresolved because the data is qualitative. The most interesting pattern is geographic &mdash; half of all modern reports cluster in the Persian Gulf and eastern Mediterranean &mdash; which raises legitimate questions about adversary tech and Navy sensor systems, but doesn't require anything exotic to explain. Save your judgement for Release 02 and what gets <em>de</em>-redacted.
+    </div>
+  </div>
 </section>
 
 <section class="filters">
