@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>UAP Gallery — PURSUE Release 01</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="88">👽</text></svg>'>
+<title>👽 UAP Gallery — PURSUE Release 01</title>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMWGLV4CE9"></script>
 <script>
@@ -152,17 +153,67 @@
   }
 
   footer { color: var(--muted); padding: 18px 32px 32px; font-size: 12px; border-top: 1px solid var(--line); }
+
+  /* Friendly alien stickers (decorative, edges only — gallery is image-heavy) */
+  .alien-stickers { position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+  .sticker {
+    position: absolute; opacity: 0; user-select: none;
+    filter: drop-shadow(0 0 10px rgba(78,201,255,.35));
+    animation: sticker-pop 9s ease-in-out infinite;
+  }
+  .sticker.s1 { top: 10%; left: 1%;  animation-delay: 0s;   font-size: 38px; }
+  .sticker.s2 { top: 55%; right: 1%; animation-delay: 3s;   font-size: 36px; }
+  .sticker.s3 { top: 88%; left: 1%;  animation-delay: 6s;   font-size: 34px; }
+  @keyframes sticker-pop {
+    0%, 92%, 100% { opacity: 0; transform: translateY(20px) scale(.4) rotate(-12deg); }
+    20% { opacity: .9; transform: translateY(-2px) scale(1.05) rotate(0deg); }
+    65% { opacity: .8; transform: translateY(-2px) scale(1) rotate(-4deg); }
+    85% { opacity: 0; transform: translateY(10px) scale(.6) rotate(8deg); }
+  }
+  header, main, footer { position: relative; z-index: 3; }
+  @media (max-width: 720px) { .alien-stickers { display: none; } }
+
+  /* Buy Me a Coffee floating widget */
+  .bmc-widget {
+    position: fixed; bottom: 20px; right: 20px; z-index: 50;
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    background: linear-gradient(135deg, #ffd166 0%, #ff8a3d 100%);
+    color: #1a1408;
+    font: 600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    text-decoration: none; border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 0 rgba(255,209,102,.6);
+    animation: bmc-pulse 2.6s ease-in-out infinite;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .bmc-widget:hover {
+    transform: translateY(-2px) scale(1.05);
+    animation-play-state: paused;
+    box-shadow: 0 10px 28px rgba(255,138,61,.7);
+    text-decoration: none;
+  }
+  .bmc-widget .bmc-icon { font-size: 18px; line-height: 1; filter: drop-shadow(0 1px 0 rgba(255,255,255,.4)); }
+  @keyframes bmc-pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 0 rgba(255,209,102,.55); }
+    60% { box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 14px rgba(255,209,102,0); }
+  }
 </style>
 </head>
 <body>
 
+<div class="alien-stickers" aria-hidden="true">
+  <span class="sticker s1">👽</span>
+  <span class="sticker s2">🛸</span>
+  <span class="sticker s3">🪐</span>
+</div>
+
 <header>
-  <h1>UAP GALLERY &mdash; PURSUE Release 01</h1>
+  <h1>👽 UAP GALLERY &mdash; PURSUE Release 01</h1>
   <div class="sub">Visual evidence from the 8 May 2026 declassification &middot; FBI still images, NASA lunar photographs, and FBI Lab composite sketch</div>
   <div class="nav">
     <a href="index.html">Catalog</a>
-    <a href="map.html">3D Map</a>
-    <a class="active" href="gallery.html">Gallery</a>
+    <a href="map.html">🗺️ Map</a>
+    <a class="active" href="gallery.html">🖼️ Gallery</a>
     <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source: war.gov/UFO ↗</a>
   </div>
 </header>
@@ -222,8 +273,12 @@
 </div>
 
 <footer>
-  Mirror of war.gov/UFO/ Release 01 (8 May 2026). Visual artifacts cached locally under <code>assets/pdf/</code> (originals) and <code>assets/thumb/</code> (thumbnails).
+  Mirror of war.gov/UFO/ Release 01 (8 May 2026). Visual artifacts cached locally under <code>assets/pdf/</code> (originals) and <code>assets/thumb/</code> (thumbnails). 👽 thanks for stopping by
 </footer>
+
+<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee">
+  <span class="bmc-icon">☕</span><span>Buy me a coffee</span>
+</a>
 
 <script src="data.js"></script>
 <script>

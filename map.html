@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="88">👽</text></svg>'>
 <title>UAP Map &mdash; PURSUE Release 01</title>
 
 <!-- Google Analytics -->
@@ -166,11 +167,45 @@
     font: inherit;
   }
 
+  /* Embed mode (?embed=1): hide chrome, used when index.html iframes the map. */
+  body.embed header,
+  body.embed #search,
+  body.embed #legend,
+  body.embed #panel,
+  body.embed .maplibregl-ctrl { display: none !important; }
+  body.embed .maplibregl-canvas { cursor: pointer; }
+
   .maplibregl-ctrl-group { background: var(--panel) !important; }
   .maplibregl-ctrl-group button { background: transparent !important; }
   .maplibregl-ctrl-group button span { filter: invert(1); }
   .maplibregl-ctrl-attrib { background: rgba(0,0,0,0.5) !important; color: var(--muted) !important; }
   .maplibregl-ctrl-attrib a { color: var(--muted) !important; }
+
+  /* Buy Me a Coffee floating widget */
+  .bmc-widget {
+    position: fixed; bottom: 20px; right: 20px; z-index: 50;
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    background: linear-gradient(135deg, #ffd166 0%, #ff8a3d 100%);
+    color: #1a1408;
+    font: 600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    text-decoration: none;
+    border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 0 rgba(255,209,102,.6);
+    animation: bmc-pulse 2.6s ease-in-out infinite;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .bmc-widget:hover {
+    transform: translateY(-2px) scale(1.05);
+    animation-play-state: paused;
+    box-shadow: 0 10px 28px rgba(255,138,61,.7);
+  }
+  .bmc-widget .bmc-icon { font-size: 18px; line-height: 1; filter: drop-shadow(0 1px 0 rgba(255,255,255,.4)); }
+  @keyframes bmc-pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 0 rgba(255,209,102,.55); }
+    60% { box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 14px rgba(255,209,102,0); }
+  }
+  body.embed .bmc-widget { display: none; }
 </style>
 </head>
 <body>
@@ -205,10 +240,16 @@
   <div style="margin-top:6px;font-size:11px;color:#666">Number badge = # records at that location</div>
 </div>
 
+<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee">
+  <span class="bmc-icon">☕</span><span>Buy me a coffee</span>
+</a>
+
 <script src="data.js"></script>
 <script>
 (async function(){
 await window.UAP_READY;
+const isEmbed = new URLSearchParams(location.search).get('embed') === '1';
+if (isEmbed) document.body.classList.add('embed');
 const records = window.UAP_CATALOG;
 const geo = window.UAP_GEOCODE;
 
@@ -293,7 +334,10 @@ const map = new maplibregl.Map({
   zoom: 1.8,
   minZoom: 1.5,
   maxPitch: 80,
-  hash: false
+  hash: false,
+  // Embed mode: non-interactive — used as homepage hero
+  interactive: !isEmbed,
+  attributionControl: !isEmbed
 });
 
 // Mercator (flat) projection — guarantees every pin is visible at its true lat/lng.
@@ -421,9 +465,10 @@ $search.addEventListener('input', () => {
 map.on('click', ()=>panel.classList.remove('open'));
 
 // Auto-open: the location with the most records — show the all-records view
-const topLoc = Object.entries(byLoc).sort((a,b) => b[1].length - a[1].length)[0];
-if (topLoc) {
-  setTimeout(() => openLocation(topLoc[0], topLoc[1]), 600);
+// (skip in embed mode for a clean homepage preview)
+if (!isEmbed) {
+  const topLoc = Object.entries(byLoc).sort((a,b) => b[1].length - a[1].length)[0];
+  if (topLoc) setTimeout(() => openLocation(topLoc[0], topLoc[1]), 600);
 }
 })();
 </script>

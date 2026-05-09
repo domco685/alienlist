@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>UAP Catalog — war.gov PURSUE Release 01 (5/8/26)</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="88">👽</text></svg>'>
+<title>👽 UAP Catalog — PURSUE Release 01 (5/8/26)</title>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMWGLV4CE9"></script>
 <script>
@@ -67,20 +68,162 @@
   td.actions a { display: inline-block; margin-right: 6px; padding: 4px 8px; border:1px solid var(--line); border-radius: 4px; font-size: 12px; }
   .thumb { width: 56px; height: 36px; object-fit: cover; border-radius: 3px; background: #222; }
   footer { color: var(--muted); padding: 18px 32px 32px; font-size: 12px; border-top: 1px solid var(--line); }
+
+  /* === Hero map preview === */
+  .hero {
+    max-width: 1400px; margin: 0 auto; padding: 24px 32px 0;
+  }
+  .hero-map {
+    position: relative;
+    display: block;
+    aspect-ratio: 16/7;
+    max-height: 520px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(255,138,61,.05);
+    background: #000;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+  }
+  .hero-map:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 36px rgba(0,0,0,.6), 0 0 0 1px rgba(255,138,61,.3);
+  }
+  .hero-map iframe {
+    width: 100%; height: 100%;
+    border: 0;
+    display: block;
+    pointer-events: none;
+  }
+  .hero-map .hero-overlay {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 18px 22px;
+    background: linear-gradient(180deg, rgba(11,14,20,0) 0%, rgba(11,14,20,.85) 70%, rgba(11,14,20,.95) 100%);
+    color: var(--text);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .hero-map .hero-title { font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
+  .hero-map .hero-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .hero-map .hero-cta {
+    background: var(--accent); color: #1a1408;
+    padding: 8px 16px; border-radius: 999px;
+    font-weight: 600; font-size: 13px;
+    transition: transform .15s;
+  }
+  .hero-map:hover .hero-cta { transform: scale(1.05); }
+  .hero-map .hero-stamp {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(11,14,20,.7); backdrop-filter: blur(6px);
+    padding: 6px 10px; border-radius: 999px;
+    border: 1px solid var(--line);
+    font-size: 11px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .hero-map .hero-stamp .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: stamp-pulse 2s ease-in-out infinite; }
+  @keyframes stamp-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+  /* === Friendly alien stickers (decorative) === */
+  .alien-stickers {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+  }
+  .sticker {
+    position: absolute;
+    font-size: 38px;
+    opacity: 0;
+    user-select: none;
+    filter: drop-shadow(0 0 10px rgba(78,201,255,.35));
+    animation: sticker-pop 9s ease-in-out infinite;
+  }
+  .sticker.s1 { top: 9%;  left: 3%;  animation-delay: 0s;   font-size: 42px; }
+  .sticker.s2 { top: 32%; right: 4%; animation-delay: 1.8s; font-size: 36px; }
+  .sticker.s3 { top: 68%; left: 2%;  animation-delay: 3.6s; font-size: 40px; }
+  .sticker.s4 { top: 85%; right: 5%; animation-delay: 5.4s; font-size: 34px; }
+  .sticker.s5 { top: 50%; left: 4%;  animation-delay: 7.2s; font-size: 32px; }
+  .sticker.s6 { top: 18%; right: 2%; animation-delay: 4.5s; font-size: 38px; }
+  @keyframes sticker-pop {
+    0%, 92%, 100% { opacity: 0; transform: translateY(20px) scale(.4) rotate(-12deg); }
+    20% { opacity: .9; transform: translateY(-2px) scale(1.05) rotate(0deg); }
+    40% { opacity: .85; transform: translateY(-6px) scale(1) rotate(6deg); }
+    65% { opacity: .8; transform: translateY(-2px) scale(1) rotate(-4deg); }
+    85% { opacity: 0; transform: translateY(10px) scale(.6) rotate(8deg); }
+  }
+  /* keep stickers below content but above background */
+  header, .hero, .summary, .filters, .table-wrap, footer { position: relative; z-index: 3; }
+  @media (max-width: 720px) {
+    .alien-stickers { display: none; }
+  }
+
+  /* === Buy Me a Coffee floating widget === */
+  .bmc-widget {
+    position: fixed; bottom: 20px; right: 20px; z-index: 50;
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    background: linear-gradient(135deg, #ffd166 0%, #ff8a3d 100%);
+    color: #1a1408;
+    font: 600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    text-decoration: none;
+    border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 0 rgba(255,209,102,.6);
+    animation: bmc-pulse 2.6s ease-in-out infinite;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .bmc-widget:hover {
+    transform: translateY(-2px) scale(1.05);
+    animation-play-state: paused;
+    box-shadow: 0 10px 28px rgba(255,138,61,.7);
+    text-decoration: none;
+  }
+  .bmc-widget .bmc-icon { font-size: 18px; line-height: 1; filter: drop-shadow(0 1px 0 rgba(255,255,255,.4)); }
+  @keyframes bmc-pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 0 rgba(255,209,102,.55); }
+    60% { box-shadow: 0 6px 20px rgba(255,138,61,.45), 0 0 0 14px rgba(255,209,102,0); }
+  }
+
+  .friendly-tag { color: var(--accent2); font-weight: 500; }
 </style>
 </head>
 <body>
 
+<div class="alien-stickers" aria-hidden="true">
+  <span class="sticker s1">👽</span>
+  <span class="sticker s2">🛸</span>
+  <span class="sticker s3">🪐</span>
+  <span class="sticker s4">🌌</span>
+  <span class="sticker s5">👾</span>
+  <span class="sticker s6">🚀</span>
+</div>
+
 <header>
-  <h1>UAP CATALOG &mdash; PURSUE Release 01</h1>
-  <div class="sub">Presidential Unsealing and Reporting System for UAP Encounters &middot; U.S. Department of War &middot; declassified 8 May 2026</div>
+  <h1>👽 UAP CATALOG &mdash; PURSUE Release 01</h1>
+  <div class="sub">Presidential Unsealing and Reporting System for UAP Encounters &middot; U.S. Department of War &middot; declassified 8 May 2026 &middot; <span class="friendly-tag">aliens are friends 🛸</span></div>
   <div class="nav">
     <a href="index.html">Catalog</a>
-    <a href="map.html">3D Map</a>
-    <a href="gallery.html">Gallery</a>
+    <a href="map.html">🗺️ Map</a>
+    <a href="gallery.html">🖼️ Gallery</a>
     <a href="https://www.war.gov/UFO/" target="_blank" rel="noopener">Source: war.gov/UFO ↗</a>
   </div>
 </header>
+
+<section class="hero">
+  <a class="hero-map" href="map.html" aria-label="Open the full interactive map">
+    <iframe src="map.html?embed=1" loading="lazy" tabindex="-1" title="UAP map preview"></iframe>
+    <div class="hero-stamp"><span class="dot"></span> 114 incident pins · 36 locations</div>
+    <div class="hero-overlay">
+      <div>
+        <div class="hero-title">Where the encounters happened 🛸</div>
+        <div class="hero-sub">Every cataloged UAP location, jittered within its regional uncertainty radius</div>
+      </div>
+      <span class="hero-cta">Open full map →</span>
+    </div>
+  </a>
+</section>
 
 <section class="summary">
   <h2>Executive Summary</h2>
@@ -175,8 +318,12 @@
 </div>
 
 <footer>
-  Mirror of war.gov/UFO/ Release 01 (8 May 2026). Catalog parsed from <code>uap-csv.csv</code>. Files cached locally under <code>assets/pdf/</code> and <code>assets/thumb/</code>. Source DVIDS videos stay hosted at dvidshub.net.
+  Mirror of war.gov/UFO/ Release 01 (8 May 2026). Catalog parsed from <code>uap-csv.csv</code>. Files cached locally under <code>assets/pdf/</code> and <code>assets/thumb/</code>. Source DVIDS videos stay hosted at dvidshub.net. <span class="friendly-tag">👽 thanks for stopping by</span>
 </footer>
+
+<a class="bmc-widget" href="https://buymeacoffee.com/yonique" target="_blank" rel="noopener" aria-label="Buy me a coffee">
+  <span class="bmc-icon">☕</span><span>Buy me a coffee</span>
+</a>
 
 <script src="data.js"></script>
 <script>
