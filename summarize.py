@@ -93,31 +93,44 @@ def extract_text_pdftotext(pdf: Path) -> str:
         return ""
 
 
+OCR_DPI = 150          # 200 was overkill; 150 reads cleanly and renders 2× faster
+OCR_FIRST_PAGES = 25   # cap pages rasterized — 25 pages ~= 75k chars OCR'd, plenty
+                       # for MAX_INPUT_CHARS while staying under timeouts on 500p FBI files
+
 def extract_text_ocr(pdf: Path) -> str:
-    """OCR via tesseract (slow, used only when pdftotext yields too little)."""
+    """OCR via tesseract (slow, used only when pdftotext yields too little).
+
+    Renders ONLY the first N pages — long FBI sections (500+ pages) would
+    otherwise time out. The Claude prompt has a 60k char input cap anyway,
+    so reading ~25 pages is enough to summarize meaningfully.
+    """
     if not have("tesseract"):
         return ""
     try:
         import tempfile
         with tempfile.TemporaryDirectory() as td:
             tdir = Path(td)
-            # Render PDF pages to PNG for tesseract.
-            # -gray outputs .pgm; -png explicitly emits .png — easier glob.
             r = subprocess.run(
-                ["pdftoppm", "-r", "200", "-gray", "-png", str(pdf), str(tdir / "p")],
-                capture_output=True, timeout=600,
+                [
+                    "pdftoppm",
+                    "-r", str(OCR_DPI),
+                    "-gray", "-png",
+                    "-f", "1", "-l", str(OCR_FIRST_PAGES),
+                    str(pdf), str(tdir / "p")
+                ],
+                capture_output=True, timeout=900,
             )
             if r.returncode != 0:
                 return ""
             images = sorted(tdir.glob("p-*.png")) + sorted(tdir.glob("p-*.pgm")) + sorted(tdir.glob("p-*.ppm"))
             if not images:
                 return ""
-            print(f"      OCR: {len(images)} pages", flush=True)
+            print(f"      OCR: {len(images)} pages @ {OCR_DPI} DPI", flush=True)
             text_parts = []
             for img in images:
                 t = subprocess.run(
                     ["tesseract", str(img), "-", "-l", "eng", "--psm", "6"],
-                    capture_output=True, text=True, timeout=180,
+                    capture_output=True, text=True, timeout=120,
                 )
                 text_parts.append(t.stdout)
                 if sum(len(p) for p in text_parts) > MAX_INPUT_CHARS:
