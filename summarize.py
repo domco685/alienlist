@@ -98,18 +98,23 @@ def extract_text_ocr(pdf: Path) -> str:
     if not have("tesseract"):
         return ""
     try:
-        # Render PDF to images first via pdftoppm if available
         import tempfile
         with tempfile.TemporaryDirectory() as td:
             tdir = Path(td)
+            # Render PDF pages to PNG for tesseract.
+            # -gray outputs .pgm; -png explicitly emits .png — easier glob.
             r = subprocess.run(
-                ["pdftoppm", "-r", "200", "-gray", str(pdf), str(tdir / "p")],
+                ["pdftoppm", "-r", "200", "-gray", "-png", str(pdf), str(tdir / "p")],
                 capture_output=True, timeout=600,
             )
             if r.returncode != 0:
                 return ""
+            images = sorted(tdir.glob("p-*.png")) + sorted(tdir.glob("p-*.pgm")) + sorted(tdir.glob("p-*.ppm"))
+            if not images:
+                return ""
+            print(f"      OCR: {len(images)} pages", flush=True)
             text_parts = []
-            for img in sorted(tdir.glob("p-*.png")) + sorted(tdir.glob("p-*.ppm")):
+            for img in images:
                 t = subprocess.run(
                     ["tesseract", str(img), "-", "-l", "eng", "--psm", "6"],
                     capture_output=True, text=True, timeout=180,
@@ -119,7 +124,7 @@ def extract_text_ocr(pdf: Path) -> str:
                     break
             return "\n".join(text_parts).strip()
     except Exception as e:
-        print(f"    OCR error: {e}", file=sys.stderr)
+        print(f"      OCR error: {e}", file=sys.stderr)
         return ""
 
 
