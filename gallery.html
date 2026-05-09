@@ -317,11 +317,16 @@ function fmtDate(s){
   return s;
 }
 
+// Visually weak / confusing items hidden from the gallery + slideshow
+const EXCLUDE_FROM_GALLERY = new Set([
+  'NASA-UAP-VM2, Apollo 12, 1969',  // empty zoom boxes above lunar surface — no visible UAP
+]);
+
 // Bucketing logic
 function isSketch(r) { return /sketch/i.test(r.title) && r.title !== 'State Department UAP Cable 1, Papua New Guinea, January 28, 1985'; }
 function isFbiA(r)   { return r.type === 'IMG' && /^FBI Photo A\d/i.test(r.title); }
 function isFbiB(r)   { return r.type === 'PDF' && /^FBI Photo B\d/i.test(r.title); }
-function isNasaImg(r){ return r.type === 'IMG' && /NASA-UAP-VM/i.test(r.title); }
+function isNasaImg(r){ return r.type === 'IMG' && /NASA-UAP-VM/i.test(r.title) && !EXCLUDE_FROM_GALLERY.has(r.title); }
 function isOther(r)  {
   // Western US Event slides + the PR (Unresolved UAP Report) modal images that are summary cards.
   // Require an actual image — VID-paired records' localFile is a PDF, not usable as a card.

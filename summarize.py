@@ -49,7 +49,7 @@ ASSETS_PDF = ROOT / "assets" / "pdf"
 CATALOG_PATH = ROOT / "catalog.json"
 SUMMARIES_PATH = ROOT / "summaries.json"
 
-DEFAULT_MODEL = "claude-sonnet-4-6"
+DEFAULT_MODEL = "claude-haiku-4-5-20251001"  # cheapest Claude tier; plenty for summarization
 MAX_INPUT_CHARS = 60_000  # ~15k tokens; well under Sonnet's window
 TRANSCRIPT_STORE_CHARS = 50_000  # truncate transcript saved to JSON
 
